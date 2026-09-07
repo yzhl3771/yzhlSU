@@ -1,0 +1,91 @@
+name: Build yzhlSU Android image patcher
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Successful Build yzhlSU run containing the KMI and ksud artifacts
+        required: true
+        default: "34104680330"
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download the eight existing KMI artifacts
+        uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ inputs.source_run_id }}
+          pattern: aarch64-*-lkm
+          path: downloaded-artifacts
+
+      - name: Download existing Android patch engine
+        uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ inputs.source_run_id }}
+          name: ksud-aarch64-linux-android
+          path: downloaded-artifacts/ksud-aarch64-linux-android
+
+      - name: Prepare standalone APK assets
+        run: |
+          mkdir -p android-image-patcher/app/src/main/assets/kmi
+          mkdir -p android-image-patcher/app/src/main/jniLibs/arm64-v8a
+          find downloaded-artifacts -type f -name '*_kernelsu.ko' -exec cp {} android-image-patcher/app/src/main/assets/kmi/ \;
+          test "$(find android-image-patcher/app/src/main/assets/kmi -type f -name '*_kernelsu.ko' | wc -l)" -eq 8
+          cp downloaded-artifacts/ksud-aarch64-linux-android/ksud \
+            android-image-patcher/app/src/main/jniLibs/arm64-v8a/libyzhlsupatcher.so
+          test -s android-image-patcher/app/src/main/jniLibs/arm64-v8a/libyzhlsupatcher.so
+
+      - name: Prepare signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE }}
+          STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS_VALUE: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD_VALUE: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > android-image-patcher/patcher.jks
+          {
+            echo 'storeFile=patcher.jks'
+            echo "storePassword=$STORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS_VALUE"
+            echo "keyPassword=$KEY_PASSWORD_VALUE"
+          } > android-image-patcher/keystore.properties
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Build release APK
+        working-directory: android-image-patcher
+        run: ./gradlew clean assembleRelease
+
+      - name: Collect APK
+        run: |
+          mkdir -p dist
+          cp android-image-patcher/app/build/outputs/apk/release/*.apk \
+            dist/yzhlSU-image-patcher-arm64.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: yzhlSU-android-image-patcher
+          path: dist/yzhlSU-image-patcher-arm64.apk
