@@ -59,6 +59,38 @@ Do not ship a shared private signing key in the repository. Every independent
 root instance should use a different application ID, signing key, handshake,
 ioctl type, FD names, data paths, and SELinux types.
 
+## GitHub Actions build
+
+Create the signing material once on a trusted Windows machine with a JDK:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/create-yzhlsu-keystore.ps1 `
+  -OutputDirectory .private-yzhlsu
+```
+
+The command creates `yzhlsu.jks` and `github-secrets.txt`. Keep both files out
+of Git and back them up securely. In the GitHub repository, open **Settings →
+Secrets and variables → Actions** and create the four repository secrets copied
+from `github-secrets.txt`:
+
+- `KEYSTORE`
+- `KEYSTORE_PASSWORD`
+- `KEY_ALIAS`
+- `KEY_PASSWORD`
+
+Push the `yzhlSU` branch, then open **Actions → Build yzhlSU → Run workflow**.
+The workflow performs these operations with one certificate identity:
+
+1. Decode the private keystore without uploading it as an artifact.
+2. Extract the public certificate length and SHA-256 digest.
+3. Build all supported arm64 and x86_64 KMI modules with those values.
+4. Build `ksuinit` and the private-protocol `yzhlsud` binaries.
+5. Build, repack, and sign the `me.yzhl.su` Manager APK.
+6. Upload the final APK as the `manager` Actions artifact.
+
+Pull requests use a one-day temporary signing key. Those APKs are disposable
+and cannot update a Manager signed by the persistent repository key.
+
 ## Scope
 
 This design supports multiple Manager APKs being installed at the same time,

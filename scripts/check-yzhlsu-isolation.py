@@ -27,6 +27,16 @@ EXPECTED = {
     ],
     "kernel/selinux/selinux.h": ['"yzhlsu"', '"yzhlsu_file"'],
     "manager/app/build.gradle.kts": ['"me.yzhl.su"', '"yzhlSU"'],
+    ".github/workflows/ddk-lkm.yml": [
+        "KSU_MANAGER_PACKAGE=me.yzhl.su",
+        "KSU_EXPECTED_SIZE=$EXPECTED_SIZE",
+        "KSU_EXPECTED_HASH=$EXPECTED_HASH",
+    ],
+    ".github/workflows/build-manager.yml": [
+        "workflow_dispatch:",
+        "secrets.KEYSTORE",
+        "expected_size: ${{ needs.generate-key.outputs.expected_size }}",
+    ],
 }
 
 FORBIDDEN = {

@@ -1,4 +1,4 @@
-name: Build KernelSU Kernel Module
+name: Build yzhlSU Kernel Module
 
 on:
   workflow_call:
@@ -11,6 +11,14 @@ on:
         description: 'DDK release version'
         required: false
         default: '20260828'
+        type: string
+      expected_size:
+        description: 'Primary Manager signing certificate size'
+        required: true
+        type: string
+      expected_hash:
+        description: 'Primary Manager signing certificate SHA-256'
+        required: true
         type: string
       expected_size2:
         description: 'Second expected signature size (for PR builds)'
@@ -37,16 +45,22 @@ jobs:
 
     - name: Build kernelsu.ko
       env:
+        EXPECTED_SIZE: ${{ inputs.expected_size }}
+        EXPECTED_HASH: ${{ inputs.expected_hash }}
         EXPECTED_SIZE2: ${{ inputs.expected_size2 }}
         EXPECTED_HASH2: ${{ inputs.expected_hash2 }}
       run: |
-        git config --global --add safe.directory /__w/KernelSU/KernelSU
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
         cd kernel
 
         echo "=== Building kernelsu.ko for KMI: ${{ inputs.kmi }} ==="
 
-        EXTRA_ARGS=""
+        if [ -z "$EXPECTED_SIZE" ] || [ -z "$EXPECTED_HASH" ]; then
+          echo "ERROR: yzhlSU requires the primary Manager certificate size and hash."
+          exit 1
+        fi
+        EXTRA_ARGS="KSU_MANAGER_PACKAGE=me.yzhl.su KSU_EXPECTED_SIZE=$EXPECTED_SIZE KSU_EXPECTED_HASH=$EXPECTED_HASH"
         if [ -n "$EXPECTED_SIZE2" ] && [ -z "$EXPECTED_HASH2" ]; then
           echo "ERROR: expected_hash2 must be provided when expected_size2 is set."
           exit 1
@@ -56,7 +70,7 @@ jobs:
           exit 1
         fi
         if [ -n "$EXPECTED_SIZE2" ]; then
-          EXTRA_ARGS="KSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 KSU_EXPECTED_HASH2=$EXPECTED_HASH2"
+          EXTRA_ARGS="$EXTRA_ARGS KSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 KSU_EXPECTED_HASH2=$EXPECTED_HASH2"
         fi
         CONFIG_KSU=m CC=clang make $EXTRA_ARGS
         
@@ -84,6 +98,8 @@ jobs:
 
     - name: Build kernelsu.ko for x64
       env:
+        EXPECTED_SIZE: ${{ inputs.expected_size }}
+        EXPECTED_HASH: ${{ inputs.expected_hash }}
         EXPECTED_SIZE2: ${{ inputs.expected_size2 }}
         EXPECTED_HASH2: ${{ inputs.expected_hash2 }}
       run: |
@@ -121,7 +137,11 @@ jobs:
         
         echo "=== Building x64 kernelsu.ko for KMI: ${{ inputs.kmi }} ==="
 
-        EXTRA_ARGS=""
+        if [ -z "$EXPECTED_SIZE" ] || [ -z "$EXPECTED_HASH" ]; then
+          echo "ERROR: yzhlSU requires the primary Manager certificate size and hash."
+          exit 1
+        fi
+        EXTRA_ARGS="KSU_MANAGER_PACKAGE=me.yzhl.su KSU_EXPECTED_SIZE=$EXPECTED_SIZE KSU_EXPECTED_HASH=$EXPECTED_HASH"
         if [ -n "$EXPECTED_SIZE2" ] && [ -z "$EXPECTED_HASH2" ]; then
           echo "ERROR: expected_hash2 must be provided when expected_size2 is set."
           exit 1
@@ -131,7 +151,7 @@ jobs:
           exit 1
         fi
         if [ -n "$EXPECTED_SIZE2" ]; then
-          EXTRA_ARGS="KSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 KSU_EXPECTED_HASH2=$EXPECTED_HASH2"
+          EXTRA_ARGS="$EXTRA_ARGS KSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 KSU_EXPECTED_HASH2=$EXPECTED_HASH2"
         fi
         
         MDIR=$(realpath .)
