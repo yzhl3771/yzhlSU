@@ -37,6 +37,7 @@ EXPECTED = {
         "secrets.KEYSTORE",
         "expected_size: ${{ needs.generate-key.outputs.expected_size }}",
     ],
+    ".github/workflows/build-lkm.yml": ["android16-6.12"],
 }
 
 FORBIDDEN = {
@@ -54,6 +55,15 @@ FORBIDDEN = {
     "kernel/policy/allowlist.c": ['"/data/adb/ksu/.allowlist"'],
     "uapi/supercall.h": ["'K'"],
     "manager/app/src/main/AndroidManifest.xml": ['android:scheme="ksu"'],
+    ".github/workflows/build-lkm.yml": [
+        "android12-5.10",
+        "android13-5.10",
+        "android13-5.15",
+        "android14-5.15",
+        "android14-6.1",
+        "android15-6.6",
+        "android17-6.18",
+    ],
 }
 
 

@@ -37,8 +37,15 @@ workflow**。也可以在推送修改后自动触发。
 成功后下载 `manager` artifact，其中的 APK 已包含：
 
 - arm64-v8a 与 x86_64 的 `yzhlsud`。
-- 当前工作流支持的全部 GKI KMI 内核模块。
+- 当前首轮测试所需的 Android 16 / Linux 6.12 GKI LKM。
 - 与内核模块完全匹配的 Manager 签名。
+
+首轮工作流只构建 `android16-6.12`，会另外提供以下独立 LKM artifacts：
+
+- `aarch64-android16-6.12-lkm`：实体 Android 设备通常使用这一项。
+- `x86_64-android16-6.12-lkm`：用于 x86_64 模拟器或设备。
+
+其他 KMI 已暂时从矩阵中移除，待 6.12 设备测试通过后再恢复。
 
 ## 4. 设备测试
 
