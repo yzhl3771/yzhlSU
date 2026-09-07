@@ -59,7 +59,7 @@ static int ksu_install_fd_with_permissions(unsigned int fd_flags, unsigned long 
         return -ENOMEM;
 
     context->permissions = permissions;
-    name = permissions & KSU_DRIVER_PERMISSION_SU_SESSION ? "[ksu_driver_su]" : "[ksu_driver]";
+    name = permissions & KSU_DRIVER_PERMISSION_SU_SESSION ? "[yzhlsu_driver_su]" : "[yzhlsu_driver]";
 
     fd = get_unused_fd_flags(fd_flags);
     if (fd < 0) {

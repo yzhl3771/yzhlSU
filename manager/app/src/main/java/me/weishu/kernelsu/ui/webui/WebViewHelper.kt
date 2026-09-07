@@ -65,7 +65,7 @@ internal suspend fun prepareWebView(
         }
 
         webUIState.moduleName = moduleInfo.name
-        webUIState.modDir = "/data/adb/modules/${moduleId}"
+        webUIState.modDir = "/data/adb/yzhlsu/modules/${moduleId}"
 
         if (SuperUserViewModel.apps.isEmpty()) {
             SuperUserViewModel().fetchAppList()
@@ -106,7 +106,7 @@ internal suspend fun prepareWebView(
             webView.webViewClient = object : WebViewClient() {
                 override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
                     val url = request.url
-                    if (url.scheme.equals("ksu", ignoreCase = true) && url.host.equals("icon", ignoreCase = true)) {
+                    if (url.scheme.equals("yzhlsu", ignoreCase = true) && url.host.equals("icon", ignoreCase = true)) {
                         val packageName = url.path?.substring(1)
                         if (!packageName.isNullOrEmpty()) {
                             val appInfo = SuperUserViewModel.apps

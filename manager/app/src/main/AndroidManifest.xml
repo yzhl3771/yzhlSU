@@ -50,7 +50,7 @@
 
                 <data
                     android:host="action"
-                    android:scheme="ksu" />
+                    android:scheme="yzhlsu" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -59,7 +59,7 @@
 
                 <data
                     android:host="webui"
-                    android:scheme="ksu" />
+                    android:scheme="yzhlsu" />
             </intent-filter>
         </activity>
 
@@ -105,7 +105,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
             <intent-filter>
-                <action android:name="me.weishu.kernelsu.magica.LAUNCH" />
+                <action android:name="me.yzhl.su.magica.LAUNCH" />
             </intent-filter>
         </receiver>
     </application>

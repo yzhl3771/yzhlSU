@@ -28,7 +28,7 @@ import me.weishu.kernelsu.ui.util.isMiui
 object Shortcut {
 
     private const val TAG = "ModuleShortcut"
-    const val SCHEME_KSU = "ksu"
+    const val SCHEME_KSU = "yzhlsu"
     const val HOST_ACTION = "action"
     const val HOST_WEBUI = "webui"
 

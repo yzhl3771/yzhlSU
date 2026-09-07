@@ -69,8 +69,8 @@ pub fn setup_sigsys_handler() {
     }
 }
 
-const DRIVER_FD_NAME: &str = "anon_inode:[ksu_driver]";
-const SU_DRIVER_FD_NAME: &str = "anon_inode:[ksu_driver_su]";
+const DRIVER_FD_NAME: &str = "anon_inode:[yzhlsu_driver]";
+const SU_DRIVER_FD_NAME: &str = "anon_inode:[yzhlsu_driver_su]";
 
 // Global driver fd cache
 static DRIVER_FD: OnceLock<RawFd> = OnceLock::new();
@@ -122,8 +122,8 @@ fn init_driver_fd() -> Option<RawFd> {
             )
         });
         if take_sigsys_occurred() {
-            eprintln!("KernelSU driver install syscall was blocked by seccomp");
-            log::error!("KernelSU driver install syscall was blocked by seccomp");
+            eprintln!("yzhlSU driver install syscall was blocked by seccomp");
+            log::error!("yzhlSU driver install syscall was blocked by seccomp");
         }
         if fd >= 0 { Some(fd) } else { None }
     } else {
@@ -137,7 +137,7 @@ fn ksuctl<T>(request: u32, arg: *mut T) -> Result<i32> {
 
     let fd = *DRIVER_FD.get_or_init(|| init_driver_fd().unwrap_or(-1));
     if fd < 0 {
-        bail!("could not retrieve kernelsu driver fd")
+        bail!("could not retrieve yzhlSU driver fd")
     }
     unsafe {
         let ret = libc::ioctl(fd as libc::c_int, request as i32, arg);
@@ -195,7 +195,7 @@ pub fn ensure_uapi_version_matched() -> anyhow::Result<()> {
     let userspace_uapi = uapi_version();
     if kernel_uapi != userspace_uapi {
         bail!(
-            "UAPI version mismatch: kernel={kernel_uapi}, ksud={userspace_uapi}. Please update KernelSU!"
+            "UAPI version mismatch: kernel={kernel_uapi}, daemon={userspace_uapi}. Please update yzhlSU!"
         );
     }
     Ok(())

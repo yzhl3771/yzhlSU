@@ -24,7 +24,7 @@ pub fn is_metamodule(props: &HashMap<String, String>) -> bool {
 }
 
 /// Get metamodule path if it exists
-/// The metamodule is stored in /data/adb/modules/{id} with a symlink at /data/adb/metamodule
+/// The metamodule is stored under yzhlSU's private module directory.
 pub fn get_metamodule_path() -> Option<PathBuf> {
     let path = Path::new(defs::METAMODULE_DIR);
 
@@ -120,7 +120,7 @@ pub fn check_install_safety() -> Result<(), bool> {
 }
 
 /// Create or update the metamodule symlink
-/// Points /data/adb/metamodule -> /data/adb/modules/{module_id}
+/// Points the private metamodule symlink at the selected private module.
 pub fn ensure_symlink(module_path: &Path) -> Result<()> {
     // METAMODULE_DIR might have trailing slash, so we need to trim it
     let symlink_path = Path::new(defs::METAMODULE_DIR.trim_end_matches('/'));

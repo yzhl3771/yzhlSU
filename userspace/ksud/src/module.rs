@@ -185,7 +185,7 @@ pub fn exec_script<T: AsRef<Path>>(path: T, wait: bool) -> Result<()> {
     info!("exec {}", path.as_ref().display());
 
     let is_module_script = path.as_ref().starts_with(defs::MODULE_DIR);
-    // Extract module_id from path if it matches /data/adb/modules/{id}/...
+    // Extract module_id from path if it matches the private module directory.
     let module_id = if is_module_script {
         path.as_ref()
             .strip_prefix(defs::MODULE_DIR)
@@ -722,7 +722,7 @@ pub fn run_action(id: &str) -> Result<()> {
     validate_module_id(id)?;
     ksucalls::ensure_uapi_version_matched()?;
 
-    let action_script_path = format!("/data/adb/modules/{id}/action.sh");
+    let action_script_path = format!("{}{id}/action.sh", defs::MODULE_DIR);
     exec_script(&action_script_path, true)
 }
 

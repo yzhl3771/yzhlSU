@@ -25,7 +25,7 @@ import me.weishu.kernelsu.ui.util.DownloadService
 import me.weishu.kernelsu.ui.util.getFileName
 import me.weishu.kernelsu.ui.webui.WebUIActivity
 
-private const val SCHEME_KSU = "ksu"
+private const val SCHEME_KSU = "yzhlsu"
 private const val HOST_ACTION = "action"
 private const val HOST_WEBUI = "webui"
 private const val PARAM_ID = "id"
