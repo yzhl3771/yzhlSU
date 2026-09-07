@@ -432,6 +432,15 @@ pub fn init_features() -> Result<()> {
 
     let mut features = load_binary_config()?;
 
+    // yzhlSU defaults to hiding SELinux modifications. An explicit persisted
+    // value (including 0) always wins, so users can still disable the feature.
+    features
+        .entry(FeatureId::SelinuxHide as u32)
+        .or_insert_with(|| {
+            log::info!("SELinux hide not configured, enabling yzhlSU default");
+            1
+        });
+
     // Get managed features from active modules and skip them during init
     if let Ok(managed_features_map) = crate::module::get_managed_features() {
         if !managed_features_map.is_empty() {

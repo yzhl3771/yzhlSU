@@ -33,12 +33,21 @@ EXPECTED = {
         "KSU_EXPECTED_SIZE=$EXPECTED_SIZE",
         "KSU_EXPECTED_HASH=$EXPECTED_HASH",
     ],
+    ".github/workflows/build-lkm.yml": ["android16-6.12", "build_x86_64: false"],
     ".github/workflows/build-manager.yml": [
         "workflow_dispatch:",
         "secrets.KEYSTORE",
         "expected_size: ${{ needs.generate-key.outputs.expected_size }}",
+        "android12-5.10",
+        "android13-5.10",
+        "android13-5.15",
+        "android14-5.15",
+        "android14-6.1",
+        "android15-6.6",
+        "android16-6.12",
+        "android17-6.18",
+        "pack_lkm: false",
     ],
-    ".github/workflows/build-lkm.yml": ["android16-6.12", "build_x86_64: false"],
 }
 
 FORBIDDEN = {

@@ -83,11 +83,15 @@ The workflow performs these operations with one certificate identity:
 
 1. Decode the private keystore without uploading it as an artifact.
 2. Extract the public certificate length and SHA-256 digest.
-3. Build the initial Android 16 / Linux 6.12 arm64 KMI module with those
-   values. Other KMIs and x86_64 remain disabled until hardware validation.
-4. Build `ksuinit` and the private-protocol `yzhlsud` binaries.
+3. Build all supported arm64 KMI modules exclusively for the local Windows
+   image patcher. x86_64 remains disabled.
+4. Build `ksuinit` and the private-protocol `yzhlsud` binaries without an
+   embedded KMI for the Android Manager.
 5. Build, repack, and sign the `me.yzhl.su` Manager APK.
-6. Upload the final APK as the `manager` Actions artifact.
+6. Build the single-file Windows local image patcher and verify that every
+   supported arm64 KMI is embedded.
+7. Upload the final APK as `manager` and the local tool as
+   `yzhlSU-local-image-patcher-windows-x64`.
 
 Pull requests use a one-day temporary signing key. Those APKs are disposable
 and cannot update a Manager signed by the persistent repository key.

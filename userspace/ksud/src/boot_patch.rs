@@ -514,6 +514,32 @@ pub struct BootPatchArgs {
     ramdisk: bool,
 }
 
+#[cfg(not(target_os = "android"))]
+pub(crate) fn patch_local_image(
+    image: PathBuf,
+    kmi: String,
+    output_dir: PathBuf,
+    output_name: String,
+) -> Result<()> {
+    patch(BootPatchArgs {
+        boot: Some(image),
+        kernel: None,
+        module: None,
+        init: None,
+        out: Some(output_dir),
+        kmi: Some(kmi),
+        out_name: Some(output_name),
+        cmdline: None,
+        allow_shell: false,
+        enable_adbd: false,
+        adb_debug_prop: None,
+        no_install: false,
+        no_custom_rc: false,
+        arch: "aarch64".to_string(),
+        ramdisk: false,
+    })
+}
+
 pub fn patch(args: BootPatchArgs) -> Result<()> {
     let inner = move || {
         let BootPatchArgs {

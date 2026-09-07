@@ -25,8 +25,8 @@ jobs:
     strategy:
       matrix:
         kmi:
-          # Initial device-validation profile. Restore other KMIs after the
-          # android16-6.12 Manager and LKM pass hardware testing.
+          # This module is an input of the standalone Windows image patcher.
+          # The Android Manager/daemon does not embed any KMI.
           - android16-6.12
     uses: ./.github/workflows/ddk-lkm.yml
     with:

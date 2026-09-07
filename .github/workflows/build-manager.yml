@@ -146,17 +146,113 @@ jobs:
       expected_hash2: ''
     secrets: inherit
 
+  build-local-patcher-lkm:
+    needs: generate-key
+    strategy:
+      matrix:
+        kmi:
+          - android12-5.10
+          - android13-5.10
+          - android13-5.15
+          - android14-5.15
+          - android14-6.1
+          - android15-6.6
+          - android17-6.18
+    uses: ./.github/workflows/ddk-lkm.yml
+    with:
+      kmi: ${{ matrix.kmi }}
+      expected_size: ${{ needs.generate-key.outputs.expected_size }}
+      expected_hash: ${{ needs.generate-key.outputs.expected_hash }}
+      build_x86_64: false
+      expected_size2: ''
+      expected_hash2: ''
+    secrets: inherit
+
   build-ksuinit:
     uses: ./.github/workflows/ksuinit.yml
 
   build-ksud:
-    needs: [build-lkm, build-ksuinit]
+    needs: build-ksuinit
     uses: ./.github/workflows/ksud.yml
     with:
       target: aarch64-linux-android
-      pack_lkm: true
+      # The Android Manager/daemon deliberately contains no embedded KMI.
+      # Image patching with the built-in KMI set belongs to the Windows tool.
+      pack_lkm: false
       pack_ksuinit: true
-  
+
+  build-local-image-patcher:
+    name: Build Windows local image patcher
+    needs: [build-lkm, build-local-patcher-lkm, build-ksuinit]
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Download LKM and loader artifacts
+        uses: actions/download-artifact@v8
+
+      - name: Prepare embedded yzhlSU assets
+        shell: pwsh
+        run: |
+          $modules = Get-ChildItem -Path "aarch64-android*-lkm" -File -Filter "*_kernelsu.ko"
+          if (-not $modules) { throw "No aarch64 yzhlSU LKM artifact was downloaded" }
+          foreach ($module in $modules) {
+            Copy-Item -LiteralPath $module.FullName -Destination "userspace/ksud/bin/aarch64/"
+          }
+          Copy-Item -LiteralPath "ksuinit-aarch64/ksuinit" -Destination "userspace/ksud/bin/aarch64/ksuinit"
+
+      - name: Setup Rust
+        shell: pwsh
+        run: |
+          rustup update stable
+
+      - name: Assemble AArch64 bootstrap
+        shell: pwsh
+        run: |
+          clang.exe --target=aarch64-linux-gnu -c -nostdlib `
+            -o userspace/ksud/.lkm_image_bootstrap.o `
+            userspace/ksud/src/lkm_image_bootstrap.S
+          if ($LASTEXITCODE -ne 0) { throw "Failed to assemble AArch64 bootstrap" }
+
+      - name: Build Windows patch engine
+        shell: pwsh
+        run: |
+          cargo build --release --manifest-path userspace/ksud/Cargo.toml
+
+      - name: Verify Windows patch engine
+        shell: pwsh
+        run: |
+          $output = & target/release/ksud.exe supported-kmis
+          if ($LASTEXITCODE -ne 0) { throw "ksud.exe self-test failed" }
+          $expected = @(
+            "android12-5.10", "android13-5.10", "android13-5.15",
+            "android14-5.15", "android14-6.1", "android15-6.6",
+            "android16-6.12", "android17-6.18"
+          )
+          foreach ($kmi in $expected) {
+            if (($output -join "`n") -notmatch [regex]::Escape($kmi)) {
+              throw "Windows patch engine does not contain $kmi"
+            }
+          }
+          & target/release/ksud.exe --help | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "ksud.exe help command failed" }
+
+      - name: Package local image patcher
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "dist" | Out-Null
+          Copy-Item -LiteralPath "target/release/ksud.exe" -Destination "dist/yzhlSU镜像工坊.exe"
+
+      - name: Upload Windows local image patcher
+        uses: actions/upload-artifact@v7
+        with:
+          name: yzhlSU-local-image-patcher-windows-x64
+          path: dist/yzhlSU镜像工坊.exe
+
   build-manager:
     needs: [generate-key]
     if: always() && needs.generate-key.result == 'success'
