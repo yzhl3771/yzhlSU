@@ -198,8 +198,13 @@ jobs:
       - name: Prepare embedded yzhlSU assets
         shell: pwsh
         run: |
-          $modules = Get-ChildItem -Path "aarch64-android*-lkm" -File -Filter "*_kernelsu.ko"
-          if (-not $modules) { throw "No aarch64 yzhlSU LKM artifact was downloaded" }
+          $modules = @(
+            Get-ChildItem -Path "." -Recurse -File -Filter "*_kernelsu.ko" |
+              Where-Object { $_.Directory.Name -like "aarch64-android*-lkm" }
+          )
+          if ($modules.Count -ne 8) {
+            throw "Expected 8 aarch64 yzhlSU LKM artifacts, found $($modules.Count)"
+          }
           foreach ($module in $modules) {
             Copy-Item -LiteralPath $module.FullName -Destination "userspace/ksud/bin/aarch64/"
           }
