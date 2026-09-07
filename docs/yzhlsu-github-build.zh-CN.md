@@ -1,6 +1,6 @@
 # yzhlSU GitHub Actions 构建
 
-此分支已经配置为使用同一份签名证书构建内核模块、`yzhlsud` 和 Manager
+此分支已经配置为使用同一份签名证书构建内核模块、`ksud` 和 Manager
 APK。请勿为后续版本更换签名，否则已安装 APK 无法直接升级，并且旧内核也不会
 认可新 Manager。
 
@@ -36,10 +36,10 @@ workflow**。也可以在推送修改后自动触发。
 
 成功后下载 `manager` artifact，其中的 APK 已包含：
 
-- arm64-v8a `yzhlsud`。
+- arm64-v8a `ksud`。
 - 与内核模块完全匹配的 Manager 签名。
 
-手机端 Manager 和其中的 `yzhlsud` 不内置任何 KMI，不能脱离外部模块在手机上
+手机端 Manager 和其中的 `ksud` 不内置任何 KMI，不能脱离外部模块在手机上
 修补镜像。以下完整 ARM64 KMI 列表只内置于独立 Windows 镜像工坊：
 
 - `android12-5.10`
@@ -66,7 +66,7 @@ workflow**。也可以在推送修改后自动触发。
 
 1. yzhlSU 显示已安装并能给测试应用授权。
 2. 官方 KernelSU Manager 显示未安装或不支持。
-3. 非模块数据写入 `/data/adb/yzhlsu`，守护进程为 `/data/adb/yzhlsud`。
+3. 非模块数据写入 `/data/adb/yzhlsu`，守护进程使用兼容名称 `/data/adb/ksud`。
 4. 模块完全按原版 KernelSU 规则写入 `/data/adb/modules` 和
    `/data/adb/modules_update`。
 5. 模块目录现为共享目录，不要让两个 Root 管理器同时增删模块；永久卸载前先备份。

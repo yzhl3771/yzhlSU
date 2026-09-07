@@ -236,7 +236,7 @@ pub fn install(libadbroot: Option<PathBuf>, data_path: Option<PathBuf>) -> Resul
     let _ = std::fs::remove_file(defs::DAEMON_PATH);
     std::fs::copy(
         // We should use /proc/self/exe, DO NOT resolve the real path
-        // So that running /data/adb/yzhlsud install does not remove the daemon unexpectedly.
+        // So that running /data/adb/ksud install does not remove the daemon unexpectedly.
         "/proc/self/exe",
         defs::DAEMON_PATH,
     )?;

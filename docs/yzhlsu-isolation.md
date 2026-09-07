@@ -14,7 +14,7 @@ KernelSU as unavailable while a yzhlSU-patched kernel is running.
 | FD wrapper | `[ksu_fdwrapper]` | `[yzhlsu_fdwrapper]` |
 | Reboot handshake | upstream magic pair | yzhlSU magic pair |
 | ioctl type | `K` | `Y` |
-| Daemon | `/data/adb/ksud` | `/data/adb/yzhlsud` |
+| Daemon | `/data/adb/ksud` | `/data/adb/ksud` (shared command name for module compatibility) |
 | Working data | `/data/adb/ksu` | `/data/adb/yzhlsu` |
 | Modules | `/data/adb/modules` | `/data/adb/modules` (shared for compatibility) |
 | SELinux domain | `u:r:ksu:s0` | `u:r:yzhlsu:s0` |
@@ -85,7 +85,7 @@ The workflow performs these operations with one certificate identity:
 2. Extract the public certificate length and SHA-256 digest.
 3. Build all supported arm64 KMI modules exclusively for the local Windows
    image patcher. x86_64 remains disabled.
-4. Build `ksuinit` and the private-protocol `yzhlsud` binaries without an
+4. Build `ksuinit` and the private-protocol `ksud` binaries without an
    embedded KMI for the Android Manager.
 5. Build, repack, and sign the `me.yzhl.su` Manager APK.
 6. Build the single-file Windows local image patcher and verify that every
@@ -105,6 +105,12 @@ kernel modules simultaneously. Those modules hook the same kernel execution,
 credential, and filesystem paths and need a single shared dispatcher before
 true simultaneous operation can be supported.
 
+The `/data/adb/ksud` command name is deliberately shared with upstream so
+third-party module installers that invoke `ksud module install` keep working.
+The yzhlSU working data, Manager package/signature, ioctl protocol, FD names,
+and SELinux domain remain private, but two KernelSU-derived implementations
+must not try to own `/data/adb/ksud` on the same boot.
+
 ## Verification
 
 After installing the yzhlSU Manager and booting a yzhlSU-patched image:
@@ -112,7 +118,7 @@ After installing the yzhlSU Manager and booting a yzhlSU-patched image:
 1. yzhlSU reports the kernel version and can grant/revoke one test app.
 2. The stock KernelSU Manager reports not installed or unsupported.
 3. yzhlSU keeps its daemon and non-module working data in `/data/adb/yzhlsu`
-   and `/data/adb/yzhlsud`.
+   and `/data/adb/ksud`.
 4. Module installation follows upstream KernelSU and uses the shared
    `/data/adb/modules` and `/data/adb/modules_update` directories.
 5. Because the module directory is shared, do not let two Root managers mutate
