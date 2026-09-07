@@ -27,8 +27,18 @@ jobs:
     - name: Prepare LKM files
       if: ${{ inputs.pack_lkm }}
       run: |
-        cp aarch64-android*-lkm/*_kernelsu.ko ./userspace/ksud/bin/aarch64/
-        cp x86_64-android*-lkm/*_kernelsu.ko ./userspace/ksud/bin/x86_64/
+        case "${{ inputs.target }}" in
+          aarch64-*)
+            cp aarch64-android*-lkm/*_kernelsu.ko ./userspace/ksud/bin/aarch64/
+            ;;
+          x86_64-*)
+            cp x86_64-android*-lkm/*_kernelsu.ko ./userspace/ksud/bin/x86_64/
+            ;;
+          *)
+            echo "ERROR: unsupported Android target: ${{ inputs.target }}"
+            exit 1
+            ;;
+        esac
     
     - name: Prepare ksuinit
       if: ${{ inputs.pack_ksuinit }}

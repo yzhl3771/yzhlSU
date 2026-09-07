@@ -37,7 +37,7 @@ EXPECTED = {
         "secrets.KEYSTORE",
         "expected_size: ${{ needs.generate-key.outputs.expected_size }}",
     ],
-    ".github/workflows/build-lkm.yml": ["android16-6.12"],
+    ".github/workflows/build-lkm.yml": ["android16-6.12", "build_x86_64: false"],
 }
 
 FORBIDDEN = {

@@ -33,5 +33,6 @@ jobs:
       kmi: ${{ matrix.kmi }}
       expected_size: ${{ inputs.expected_size }}
       expected_hash: ${{ inputs.expected_hash }}
+      build_x86_64: false
       expected_size2: ${{ inputs.expected_size2 || '' }}
       expected_hash2: ${{ inputs.expected_hash2 || '' }}

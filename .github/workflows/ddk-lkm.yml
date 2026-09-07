@@ -20,6 +20,11 @@ on:
         description: 'Primary Manager signing certificate SHA-256'
         required: true
         type: string
+      build_x86_64:
+        description: 'Also build the optional x86_64 LKM'
+        required: false
+        default: false
+        type: boolean
       expected_size2:
         description: 'Second expected signature size (for PR builds)'
         required: false
@@ -97,6 +102,7 @@ jobs:
         path: /github/workspace/out/aarch64/${{ inputs.kmi }}_kernelsu.ko
 
     - name: Build kernelsu.ko for x64
+      if: ${{ inputs.build_x86_64 }}
       env:
         EXPECTED_SIZE: ${{ inputs.expected_size }}
         EXPECTED_HASH: ${{ inputs.expected_hash }}
@@ -179,6 +185,7 @@ jobs:
         echo "Size after stripping: $(du -h "$OUT_DIR/$OUTPUT_NAME" | cut -f1)"
         
     - name: Upload x64 kernelsu.ko artifact
+      if: ${{ inputs.build_x86_64 }}
       uses: actions/upload-artifact@v7
       with:
         name: x86_64-${{ inputs.kmi }}-lkm
