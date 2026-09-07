@@ -23,7 +23,8 @@ EXPECTED = {
     "userspace/ksud/src/defs.rs": [
         '"yzhlsu/"',
         '"yzhlsud"',
-        'concatcp!(WORKING_DIR, "modules/")',
+        'concatcp!(ADB_DIR, "modules/")',
+        'concatcp!(ADB_DIR, "modules_update/")',
     ],
     "kernel/selinux/selinux.h": ['"yzhlsu"', '"yzhlsu_file"'],
     "kernel/manager/apk_sign.c": ["#define CERT_MAX_LENGTH 2048"],
@@ -60,7 +61,8 @@ FORBIDDEN = {
     "userspace/ksud/src/defs.rs": [
         'concatcp!(ADB_DIR, "ksu/")',
         'concatcp!(ADB_DIR, "ksud")',
-        'concatcp!(ADB_DIR, "modules/")',
+        'concatcp!(WORKING_DIR, "modules/")',
+        'concatcp!(WORKING_DIR, "modules_update/")',
     ],
     "kernel/policy/allowlist.c": ['"/data/adb/ksu/.allowlist"'],
     "uapi/supercall.h": ["'K'"],

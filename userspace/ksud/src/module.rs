@@ -185,7 +185,7 @@ pub fn exec_script<T: AsRef<Path>>(path: T, wait: bool) -> Result<()> {
     info!("exec {}", path.as_ref().display());
 
     let is_module_script = path.as_ref().starts_with(defs::MODULE_DIR);
-    // Extract module_id from path if it matches the private module directory.
+    // Extract module_id from path if it matches /data/adb/modules/{id}/...
     let module_id = if is_module_script {
         path.as_ref()
             .strip_prefix(defs::MODULE_DIR)

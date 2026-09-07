@@ -19,9 +19,9 @@ mod android {
 
     pub const DAEMON_LINK_PATH: &str = concatcp!(BINARY_DIR, "yzhlsud");
 
-    pub const MODULE_DIR: &str = concatcp!(WORKING_DIR, "modules/");
-    pub const MODULE_UPDATE_DIR: &str = concatcp!(WORKING_DIR, "modules_update/");
-    pub const METAMODULE_DIR: &str = concatcp!(WORKING_DIR, "metamodule/");
+    pub const MODULE_DIR: &str = concatcp!(ADB_DIR, "modules/");
+    pub const MODULE_UPDATE_DIR: &str = concatcp!(ADB_DIR, "modules_update/");
+    pub const METAMODULE_DIR: &str = concatcp!(ADB_DIR, "metamodule/");
 
     // Prefer /metadata/watchdog/ when present, else /metadata
     pub const PREINIT_DIR_WATCHDOG: &str = "/metadata/watchdog/yzhlsu/";

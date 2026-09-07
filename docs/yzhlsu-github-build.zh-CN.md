@@ -66,9 +66,10 @@ workflow**。也可以在推送修改后自动触发。
 
 1. yzhlSU 显示已安装并能给测试应用授权。
 2. 官方 KernelSU Manager 显示未安装或不支持。
-3. 数据仅写入 `/data/adb/yzhlsu`，守护进程为 `/data/adb/yzhlsud`。
-4. 安装模块只改变 `/data/adb/yzhlsu/modules`。
-5. 重启、撤销授权和永久卸载均不会删除其他 Root 实现的数据。
+3. 非模块数据写入 `/data/adb/yzhlsu`，守护进程为 `/data/adb/yzhlsud`。
+4. 模块完全按原版 KernelSU 规则写入 `/data/adb/modules` 和
+   `/data/adb/modules_update`。
+5. 模块目录现为共享目录，不要让两个 Root 管理器同时增删模块；永久卸载前先备份。
 
 当前设计允许多个 Manager APK 同时安装，但不支持同时加载多套独立的
 KernelSU 派生内核模块。

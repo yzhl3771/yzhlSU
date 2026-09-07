@@ -16,7 +16,7 @@ KernelSU as unavailable while a yzhlSU-patched kernel is running.
 | ioctl type | `K` | `Y` |
 | Daemon | `/data/adb/ksud` | `/data/adb/yzhlsud` |
 | Working data | `/data/adb/ksu` | `/data/adb/yzhlsu` |
-| Modules | `/data/adb/modules` | `/data/adb/yzhlsu/modules` |
+| Modules | `/data/adb/modules` | `/data/adb/modules` (shared for compatibility) |
 | SELinux domain | `u:r:ksu:s0` | `u:r:yzhlsu:s0` |
 | Deep-link scheme | `ksu` | `yzhlsu` |
 
@@ -111,8 +111,9 @@ After installing the yzhlSU Manager and booting a yzhlSU-patched image:
 
 1. yzhlSU reports the kernel version and can grant/revoke one test app.
 2. The stock KernelSU Manager reports not installed or unsupported.
-3. yzhlSU creates `/data/adb/yzhlsu` and `/data/adb/yzhlsud` only.
-4. Installing or removing a yzhlSU module changes only
-   `/data/adb/yzhlsu/modules`.
-5. Uninstalling yzhlSU does not remove `/data/adb/ksu`, `/data/adb/ksud`, or
-   `/data/adb/modules` owned by another implementation.
+3. yzhlSU keeps its daemon and non-module working data in `/data/adb/yzhlsu`
+   and `/data/adb/yzhlsud`.
+4. Module installation follows upstream KernelSU and uses the shared
+   `/data/adb/modules` and `/data/adb/modules_update` directories.
+5. Because the module directory is shared, do not let two Root managers mutate
+   modules concurrently, and back up modules before permanently uninstalling.
