@@ -15,6 +15,13 @@ data class SystemInfo(
     val kernelVersion: String,
     val managerVersion: String,
     val deviceModel: String,
+    val manufacturer: String,
+    val deviceCodeName: String,
+    val androidVersion: String,
+    val apiLevel: Int,
+    val buildId: String,
+    val securityPatch: String,
+    val supportedAbis: String,
     val fingerprint: String,
     val selinuxStatus: String,
     val seccompStatus: Int

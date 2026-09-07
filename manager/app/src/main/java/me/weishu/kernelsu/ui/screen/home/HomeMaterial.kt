@@ -1,10 +1,5 @@
 package me.weishu.kernelsu.ui.screen.home
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,15 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.DeveloperBoard
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Warning
@@ -46,14 +38,11 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -62,7 +51,6 @@ import me.weishu.kernelsu.KernelVersion
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.component.WarningLevel
-import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.SegmentedColumn
 import me.weishu.kernelsu.ui.component.material.SegmentedListItem
@@ -91,9 +79,6 @@ fun HomePagerMaterial(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
-            if (state.checkUpdateEnabled) {
-                UpdateCard(state = state, actions = actions)
-            }
             if (state.showManagerPrBuildWarning) {
                 WarningCard(stringResource(id = R.string.home_pr_build_warning), level = WarningLevel.Notice)
             } else if (state.showKernelPrBuildWarning) {
@@ -147,41 +132,7 @@ fun HomePagerMaterial(
                 actions = actions,
             )
             InfoCard(systemInfo = state.systemInfo)
-            SupportLinks(onOpenUrl = actions.onOpenUrl)
             Spacer(Modifier.height(bottomInnerPadding))
-        }
-    }
-}
-
-@Composable
-private fun UpdateCard(
-    state: HomeUiState,
-    actions: HomeActions,
-) {
-    val newVersion = state.latestVersionInfo
-    val title = stringResource(id = R.string.module_changelog)
-    val updateText = stringResource(id = R.string.module_update)
-
-    AnimatedVisibility(
-        visible = state.hasUpdate,
-        enter = fadeIn() + expandVertically(),
-        exit = shrinkVertically() + fadeOut()
-    ) {
-        val updateDialog = rememberConfirmDialog(onConfirm = { actions.onOpenUrl(newVersion.downloadUrl) })
-        WarningCard(
-            message = stringResource(id = R.string.new_version_available, newVersion.versionCode),
-            level = WarningLevel.Notice
-        ) {
-            if (newVersion.changelog.isEmpty()) {
-                actions.onOpenUrl(newVersion.downloadUrl)
-            } else {
-                updateDialog.showConfirm(
-                    title = title,
-                    content = newVersion.changelog,
-                    markdown = true,
-                    confirm = updateText
-                )
-            }
         }
     }
 }
@@ -352,39 +303,6 @@ private fun WarningCard(
 }
 
 @Composable
-private fun SupportLinks(
-    onOpenUrl: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val learnMoreUrl = stringResource(R.string.home_learn_kernelsu_url)
-
-    SegmentedColumn(modifier = modifier.fillMaxWidth()) {
-        item {
-            SegmentedListItem(
-                onClick = { onOpenUrl("https://patreon.com/weishu") },
-                headlineContent = { Text(stringResource(R.string.home_support_title)) },
-                supportingContent = { Text(stringResource(R.string.home_support_content)) },
-                leadingContent = {
-                    Icon(Icons.Filled.VolunteerActivism, stringResource(R.string.home_support_title))
-                },
-                trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
-            )
-        }
-        item {
-            SegmentedListItem(
-                onClick = { onOpenUrl(learnMoreUrl) },
-                headlineContent = { Text(stringResource(R.string.home_learn_kernelsu)) },
-                supportingContent = { Text(stringResource(R.string.home_click_to_learn_kernelsu)) },
-                leadingContent = {
-                    Icon(Icons.AutoMirrored.Filled.MenuBook, stringResource(R.string.home_learn_kernelsu))
-                },
-                trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
-            )
-        }
-    }
-}
-
-@Composable
 private fun InfoCard(
     systemInfo: SystemInfo,
     modifier: Modifier = Modifier,
@@ -452,6 +370,48 @@ private fun InfoCard(
             }
             item {
                 InfoCardItem(
+                    icon = Icons.Filled.Smartphone,
+                    label = stringResource(R.string.home_manufacturer),
+                    content = systemInfo.manufacturer,
+                )
+            }
+            item {
+                InfoCardItem(
+                    icon = Icons.Filled.Tag,
+                    label = stringResource(R.string.home_device_codename),
+                    content = systemInfo.deviceCodeName,
+                )
+            }
+            item {
+                InfoCardItem(
+                    icon = Icons.Filled.DeveloperBoard,
+                    label = stringResource(R.string.home_android_version),
+                    content = "${systemInfo.androidVersion} (API ${systemInfo.apiLevel})",
+                )
+            }
+            item {
+                InfoCardItem(
+                    icon = Icons.Filled.DeveloperBoard,
+                    label = stringResource(R.string.home_supported_abis),
+                    content = systemInfo.supportedAbis,
+                )
+            }
+            item {
+                InfoCardItem(
+                    icon = Icons.Filled.Tag,
+                    label = stringResource(R.string.home_build_id),
+                    content = systemInfo.buildId,
+                )
+            }
+            item {
+                InfoCardItem(
+                    icon = Icons.Filled.Security,
+                    label = stringResource(R.string.home_security_patch),
+                    content = systemInfo.securityPatch,
+                )
+            }
+            item {
+                InfoCardItem(
                     icon = Icons.Filled.Fingerprint,
                     label = stringResource(R.string.home_fingerprint),
                     content = systemInfo.fingerprint,
@@ -514,14 +474,17 @@ private val previewSystemInfo = SystemInfo(
     kernelVersion = "6.1.0-android14-0-g123456789000-ab12345678",
     managerVersion = "3.0.0 (30000)",
     deviceModel = "Google Pixel 6 Pro",
+    manufacturer = "Google",
+    deviceCodeName = "raven",
+    androidVersion = "16",
+    apiLevel = 36,
+    buildId = "BP2A.250605.031.A3",
+    securityPatch = "2026-08-05",
+    supportedAbis = "arm64-v8a, armeabi-v7a",
     fingerprint = "google/raven/raven:14/AP1A.240305.019:user/release-keys",
     selinuxStatus = "Enforcing",
     seccompStatus = 2
 )
-
-private val previewUriHandler = object : UriHandler {
-    override fun openUri(uri: String) {}
-}
 
 @Composable
 private fun HomeScreenPreviewContent(
@@ -531,25 +494,22 @@ private fun HomeScreenPreviewContent(
     isLateLoadMode: Boolean = false,
     selinuxStatus: String = "Enforcing",
 ) {
-    CompositionLocalProvider(LocalUriHandler provides previewUriHandler) {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            val actions = HomeActions({}, {})
-            StatusCard(
-                state = previewHomeScreenState(
-                    ksuVersion = ksuVersion,
-                    lkmMode = lkmMode,
-                    isSafeMode = isSafeMode,
-                    isLateLoadMode = isLateLoadMode,
-                    selinuxStatus = selinuxStatus,
-                ),
-                actions = actions
-            )
-            InfoCard(previewSystemInfo.copy(selinuxStatus = selinuxStatus))
-            SupportLinks(onOpenUrl = {})
-        }
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        val actions = HomeActions({}, {})
+        StatusCard(
+            state = previewHomeScreenState(
+                ksuVersion = ksuVersion,
+                lkmMode = lkmMode,
+                isSafeMode = isSafeMode,
+                isLateLoadMode = isLateLoadMode,
+                selinuxStatus = selinuxStatus,
+            ),
+            actions = actions
+        )
+        InfoCard(previewSystemInfo.copy(selinuxStatus = selinuxStatus))
     }
 }
 
