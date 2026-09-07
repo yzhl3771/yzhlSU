@@ -26,6 +26,7 @@ EXPECTED = {
         'concatcp!(WORKING_DIR, "modules/")',
     ],
     "kernel/selinux/selinux.h": ['"yzhlsu"', '"yzhlsu_file"'],
+    "kernel/manager/apk_sign.c": ["#define CERT_MAX_LENGTH 2048"],
     "manager/app/build.gradle.kts": ['"me.yzhl.su"', '"yzhlSU"'],
     ".github/workflows/ddk-lkm.yml": [
         "KSU_MANAGER_PACKAGE=me.yzhl.su",
