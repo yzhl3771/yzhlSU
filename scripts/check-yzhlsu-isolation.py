@@ -14,7 +14,17 @@ EXPECTED = {
         "yzhlSU requires KSU_EXPECTED_SIZE",
         "yzhlSU requires KSU_EXPECTED_HASH",
     ],
-    "kernel/supercall/supercall.c": ["[yzhlsu_driver]", "[yzhlsu_driver_su]"],
+    "kernel/supercall/supercall.c": [
+        "[yzhlsu_driver]",
+        "[yzhlsu_driver_su]",
+        "[yzhlsu_compat]",
+        "KSU_UPSTREAM_INSTALL_MAGIC1",
+        "current_uid().val == 0",
+    ],
+    "kernel/supercall/dispatch.c": [
+        "ksu_is_upstream_compat_fd(filp)",
+        "_IOC_TYPE(cmd) == 'K'",
+    ],
     "kernel/runtime/ksud.h": ['#define KSUD_PATH "/data/adb/ksud"'],
     "manager/app/src/main/cpp/ksu.cc": ["[yzhlsu_driver]"],
     "userspace/ksud/src/ksucalls.rs": [

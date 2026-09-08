@@ -18,6 +18,11 @@
 #include "klog.h" // IWYU pragma: keep
 
 #define KSU_DRIVER_PERMISSION_SU_SESSION (1UL << 0)
+#define KSU_DRIVER_PERMISSION_UPSTREAM_COMPAT (1UL << 1)
+
+/* Root-only compatibility for tools such as Zygisk Next. */
+#define KSU_UPSTREAM_INSTALL_MAGIC1 0xDEADBEEF
+#define KSU_UPSTREAM_INSTALL_MAGIC2 0xCAFEBABE
 
 struct ksu_driver_context {
     unsigned long permissions;
@@ -26,6 +31,7 @@ struct ksu_driver_context {
 struct ksu_install_fd_tw {
     struct callback_head cb;
     int __user *outp;
+    unsigned long permissions;
 };
 
 static int anon_ksu_release(struct inode *inode, struct file *filp)
@@ -59,7 +65,12 @@ static int ksu_install_fd_with_permissions(unsigned int fd_flags, unsigned long 
         return -ENOMEM;
 
     context->permissions = permissions;
-    name = permissions & KSU_DRIVER_PERMISSION_SU_SESSION ? "[yzhlsu_driver_su]" : "[yzhlsu_driver]";
+    if (permissions & KSU_DRIVER_PERMISSION_SU_SESSION)
+        name = "[yzhlsu_driver_su]";
+    else if (permissions & KSU_DRIVER_PERMISSION_UPSTREAM_COMPAT)
+        name = "[yzhlsu_compat]";
+    else
+        name = "[yzhlsu_driver]";
 
     fd = get_unused_fd_flags(fd_flags);
     if (fd < 0) {
@@ -99,10 +110,18 @@ bool ksu_is_su_session_fd(const struct file *filp)
     return context && (context->permissions & KSU_DRIVER_PERMISSION_SU_SESSION);
 }
 
+bool ksu_is_upstream_compat_fd(const struct file *filp)
+{
+    const struct ksu_driver_context *context = filp->private_data;
+
+    return context &&
+           (context->permissions & KSU_DRIVER_PERMISSION_UPSTREAM_COMPAT);
+}
+
 static void ksu_install_fd_tw_func(struct callback_head *cb)
 {
     struct ksu_install_fd_tw *tw = container_of(cb, struct ksu_install_fd_tw, cb);
-    int fd = ksu_install_fd();
+    int fd = ksu_install_fd_with_permissions(O_CLOEXEC, tw->permissions);
 
     pr_info("[%d] install ksu fd: %d\n", current->pid, fd);
     if (copy_to_user(tw->outp, &fd, sizeof(fd))) {
@@ -119,7 +138,9 @@ static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
     int magic1 = (int)PT_REGS_PARM1(real_regs);
     int magic2 = (int)PT_REGS_PARM2(real_regs);
 
-    if (magic1 == KSU_INSTALL_MAGIC1 && magic2 == KSU_INSTALL_MAGIC2) {
+    if ((magic1 == KSU_INSTALL_MAGIC1 && magic2 == KSU_INSTALL_MAGIC2) ||
+        (current_uid().val == 0 && magic1 == KSU_UPSTREAM_INSTALL_MAGIC1 &&
+         magic2 == KSU_UPSTREAM_INSTALL_MAGIC2)) {
         struct ksu_install_fd_tw *tw;
         unsigned long arg4 = (unsigned long)PT_REGS_SYSCALL_PARM4(real_regs);
 
@@ -128,6 +149,9 @@ static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
             return 0;
 
         tw->outp = (int __user *)arg4;
+        tw->permissions = magic1 == KSU_UPSTREAM_INSTALL_MAGIC1 ?
+                              KSU_DRIVER_PERMISSION_UPSTREAM_COMPAT :
+                              0;
         tw->cb.func = ksu_install_fd_tw_func;
 
         if (task_work_add(current, &tw->cb, TWA_RESUME)) {

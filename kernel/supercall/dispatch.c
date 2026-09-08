@@ -850,6 +850,13 @@ long ksu_supercall_handle_ioctl(const struct file *filp, unsigned int cmd, void 
 {
     int i;
 
+    /*
+     * Root-side integrations use the upstream 'K' ioctl namespace. Translate
+     * it only on the root-only compatibility FD; yzhlSU remains private.
+     */
+    if (ksu_is_upstream_compat_fd(filp) && _IOC_TYPE(cmd) == 'K')
+        cmd = _IOC(_IOC_DIR(cmd), 'Y', _IOC_NR(cmd), _IOC_SIZE(cmd));
+
 #ifdef CONFIG_KSU_DEBUG
     pr_info("ksu ioctl: cmd=0x%x from uid=%d\n", cmd, current_uid().val);
 #endif

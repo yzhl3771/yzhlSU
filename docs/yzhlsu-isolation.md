@@ -111,6 +111,12 @@ The yzhlSU working data, Manager package/signature, ioctl protocol, FD names,
 and SELinux domain remain private, but two KernelSU-derived implementations
 must not try to own `/data/adb/ksud` on the same boot.
 
+Root-side KernelSU integrations such as Zygisk Next can also request a
+restricted compatibility FD with the upstream handshake and `'K'` ioctl
+namespace. This request is accepted only when the caller is already UID 0.
+The FD is named `[yzhlsu_compat]`, so an ordinary upstream Manager cannot use
+this path to detect or control yzhlSU.
+
 ## Verification
 
 After installing the yzhlSU Manager and booting a yzhlSU-patched image:
