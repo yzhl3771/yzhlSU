@@ -62,4 +62,4 @@ rfd = { version = "0.15", default-features = false }
 windows-sys = { version = "0.59", features = ["Win32_System_Console"] }
 
 [build-dependencies]
-bindgen = "0.72"
+bindgen = "0.73"
