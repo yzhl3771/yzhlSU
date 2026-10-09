@@ -30,13 +30,8 @@ on:
         required: false
         default: ''
         type: string
-      expected_size:
-        description: 'expected signature size'
-        required: false
-        default: ''
-        type: string
-      expected_hash:
-        description: 'expected signature hash'
+      expected_hash2:
+        description: 'Second expected signature SHA-256 (for PR builds)'
         required: false
         default: ''
         type: string
@@ -74,9 +69,6 @@ jobs:
         if [ -n "$EXPECTED_SIZE2" ] && [ -z "$EXPECTED_HASH2" ]; then
           echo "ERROR: expected_hash2 must be provided when expected_size2 is set."
           exit 1
-        fi
-        if [ -n "$EXPECTED_SIZE" ]; then
-          EXTRA_ARGS="$EXTRA_ARGS KSU_EXPECTED_SIZE=$EXPECTED_SIZE"
         fi
         if [ -n "$EXPECTED_SIZE2" ]; then
           EXTRA_ARGS="$EXTRA_ARGS KSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 KSU_EXPECTED_HASH2=$EXPECTED_HASH2"
@@ -155,9 +147,6 @@ jobs:
         if [ -n "$EXPECTED_SIZE2" ] && [ -z "$EXPECTED_HASH2" ]; then
           echo "ERROR: expected_hash2 must be provided when expected_size2 is set."
           exit 1
-        fi
-        if [ -n "$EXPECTED_SIZE" ]; then
-          EXTRA_ARGS="$EXTRA_ARGS KSU_EXPECTED_SIZE=$EXPECTED_SIZE"
         fi
         if [ -n "$EXPECTED_SIZE2" ]; then
           EXTRA_ARGS="$EXTRA_ARGS KSU_EXPECTED_SIZE2=$EXPECTED_SIZE2 KSU_EXPECTED_HASH2=$EXPECTED_HASH2"
