@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {
     "uapi/supercall.h": ["0x595A484C", "0x53553031", "_IOR('Y'"],
     "kernel/Kbuild": [
-        "KSU_MANAGER_PACKAGE := me.yzhl.su",
+        "KSU_PACKAGE_NAME ?= me.yzhl.su",
         "yzhlSU requires KSU_EXPECTED_SIZE",
         "yzhlSU requires KSU_EXPECTED_HASH",
     ],
@@ -46,7 +46,7 @@ EXPECTED = {
     "kernel/manager/apk_sign.c": ["#define CERT_MAX_LENGTH 2048"],
     "manager/app/build.gradle.kts": ['"me.yzhl.su"', '"yzhlSU"'],
     ".github/workflows/ddk-lkm.yml": [
-        "KSU_MANAGER_PACKAGE=me.yzhl.su",
+        "KSU_PACKAGE_NAME=me.yzhl.su",
         "KSU_EXPECTED_SIZE=$EXPECTED_SIZE",
         "KSU_EXPECTED_HASH=$EXPECTED_HASH",
     ],

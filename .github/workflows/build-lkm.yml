@@ -15,8 +15,13 @@ on:
         required: false
         default: ''
         type: string
-      expected_hash2:
-        description: 'Second expected signature hash (for PR builds)'
+      expected_size:
+        description: 'expected signature size'
+        required: false
+        default: ''
+        type: string
+      expected_hash:
+        description: 'expected signature hash'
         required: false
         default: ''
         type: string

@@ -8,7 +8,9 @@
 
 // 2: allowlist v4 root profile flags
 // 3: scoped su-session driver fd
-static const __u32 KERNEL_SU_UAPI_VERSION = 3;
+// 4: add KSU_GET_INFO_FLAG_BUNDLED
+// 5: add EVENT_SERVICES with a start/skip result
+static const __u32 KERNEL_SU_UAPI_VERSION = 5;
 
 /* yzhlSU-private handshake for the reboot hook that installs the control fd. */
 static const __u32 KSU_INSTALL_MAGIC1 = 0x595A484C; /* "YZHL" */
@@ -21,11 +23,13 @@ struct ksu_become_daemon_cmd {
 static const __u32 EVENT_POST_FS_DATA = 1;
 static const __u32 EVENT_BOOT_COMPLETED = 2;
 static const __u32 EVENT_MODULE_MOUNTED = 3;
+static const __u32 EVENT_SERVICES = 4;
 
 static const __u32 KSU_GET_INFO_FLAG_LKM = (1U << 0);
 static const __u32 KSU_GET_INFO_FLAG_MANAGER = (1U << 1);
 static const __u32 KSU_GET_INFO_FLAG_LATE_LOAD = (1U << 2);
 static const __u32 KSU_GET_INFO_FLAG_PR_BUILD = (1U << 3);
+static const __u32 KSU_GET_INFO_FLAG_BUNDLED = (1U << 4);
 
 struct ksu_get_info_cmd {
     __u32 version; /* Output: KERNEL_SU_VERSION */
