@@ -235,6 +235,8 @@ jobs:
       - name: Verify Windows patch engine
         shell: pwsh
         run: |
+          cargo test --release --manifest-path userspace/ksud/Cargo.toml
+          if ($LASTEXITCODE -ne 0) { throw "Patch engine unit tests failed" }
           $output = & target/release/ksud.exe supported-kmis
           if ($LASTEXITCODE -ne 0) { throw "ksud.exe self-test failed" }
           $expected = @(
