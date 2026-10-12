@@ -132,6 +132,7 @@ class MainActivity : ComponentActivity() {
 
         val isManager = Natives.isManager
         if (isManager && Natives.kernelUAPIVersion == Natives.managerUAPIVersion) install()
+        ManagerDisguise.reload()
 
         if (savedInstanceState == null && !ManagerDisguise.enabled) intent?.let { intentChannel.trySend(it) }
 
@@ -275,6 +276,11 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         if (!ManagerDisguise.enabled) intentChannel.trySend(intent)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ManagerDisguise.reload()
     }
 }
 

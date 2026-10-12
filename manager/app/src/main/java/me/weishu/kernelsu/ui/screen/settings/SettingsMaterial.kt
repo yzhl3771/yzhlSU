@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.filled.LayersClear
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.VerifiedUser
@@ -104,6 +105,22 @@ fun SettingPagerMaterial(
                                 enabled = uiState.selinuxHideStatus == "supported",
                                 checked = uiState.isSelinuxHideEnabled,
                                 onCheckedChange = actions.onSetSelinuxHideEnabled
+                            )
+                        },
+                        {
+                            val adbRootSummary = when (uiState.adbRootStatus) {
+                                "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                "forced" -> stringResource(id = R.string.feature_status_forced_summary)
+                                else -> stringResource(id = R.string.settings_adb_root_summary)
+                            }
+                            SegmentedSwitchItem(
+                                icon = Icons.Filled.Adb,
+                                title = stringResource(id = R.string.settings_adb_root),
+                                summary = adbRootSummary,
+                                enabled = uiState.adbRootStatus == "supported",
+                                checked = uiState.isAdbRootEnabled,
+                                onCheckedChange = actions.onSetAdbRootEnabled
                             )
                         },
                         {

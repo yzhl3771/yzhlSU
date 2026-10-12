@@ -37,6 +37,7 @@ import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
 class WebUIActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
+        ManagerDisguise.reload()
         if (ManagerDisguise.enabled) {
             startActivity(android.content.Intent(this, me.weishu.kernelsu.ui.MainActivity::class.java))
             finish()
@@ -50,6 +51,7 @@ class WebUIActivity : ComponentActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
         super.onCreate(savedInstanceState)
+        ManagerDisguise.reload()
 
         if (ManagerDisguise.enabled) {
             startActivity(android.content.Intent(this, me.weishu.kernelsu.ui.MainActivity::class.java))

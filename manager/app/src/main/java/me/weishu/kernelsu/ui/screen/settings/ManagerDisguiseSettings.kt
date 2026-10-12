@@ -1,5 +1,6 @@
 package me.weishu.kernelsu.ui.screen.settings
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
@@ -31,6 +33,7 @@ fun ManagerDisguiseSettings() {
     var enabling by rememberSaveable { mutableStateOf(false) }
     var input by rememberSaveable { mutableStateOf("") }
     val count = input.toIntOrNull()?.takeIf { it in 2..99 }
+    val context = LocalContext.current
 
     SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
         item {
@@ -74,8 +77,12 @@ fun ManagerDisguiseSettings() {
                 TextButton(
                     enabled = !editing || count != null,
                     onClick = {
-                        if (editing) count?.let(ManagerDisguise::updateTapCount)
-                        if (enabling) ManagerDisguise.updateEnabled(true)
+                        val saved = if (editing) count?.let(ManagerDisguise::updateTapCount) == true
+                            else ManagerDisguise.updateEnabled(true)
+                        if (!saved) {
+                            Toast.makeText(context, R.string.settings_manager_disguise_save_failed, Toast.LENGTH_LONG).show()
+                            return@TextButton
+                        }
                         editing = false
                         enabling = false
                     },

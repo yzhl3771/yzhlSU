@@ -308,6 +308,7 @@
     <string name="download">下载</string>
     <string name="download_cancel">取消</string>
     <string name="download_install">安装</string>
+    <string name="settings_adb_root">以 Root 运行 ADB</string>
     <string name="settings_adb_root_summary">以 Root 权限运行 adbd 守护进程</string>
     <string name="settings_shell_su_adb_only">限制 Shell 仅可通过 ADB 获取 Root</string>
     <string name="settings_shell_su_adb_only_summary">授权 Shell 后的额外检查：仅由 adbd 或 KernelSU Root 进程（如 ADB 模块）启动的 shell 进程可获取 Root，防止应用提权到 shell 后进一步获取 Root</string>
@@ -341,5 +342,6 @@
     <string name="settings_navigation_badge_summary">在导航栏显示已授权应用和已启用模块数量</string>
     <string name="settings_manager_disguise">伪装未安装模式</string>
     <string name="settings_manager_disguise_taps">恢复管理器的连点次数</string>
-    <string name="settings_manager_disguise_summary">隐藏 Root 管理界面，不会关闭 Root。连点首页内核版本号 %1$d 次恢复管理器，相邻点击间隔不能超过 2 秒。恢复后此模式自动关闭。</string>
+    <string name="settings_manager_disguise_summary">隐藏 Root 管理界面，不会关闭 Root。状态和次数保存在 Root 工作目录，卸载重装后仍保留。连点首页内核版本号 %1$d 次恢复，相邻点击间隔不能超过 2 秒。恢复后此模式自动关闭。</string>
+    <string name="settings_manager_disguise_save_failed">无法将配置保存到 Root 工作目录，本次修改未生效。</string>
 </resources>

@@ -328,7 +328,7 @@
     <string name="download">Download</string>
     <string name="download_cancel">Cancel</string>
     <string name="download_install">Install</string>
-    <string name="settings_adb_root" translatable="false">ADB Root</string>
+    <string name="settings_adb_root">Run ADB as root</string>
     <string name="settings_adb_root_summary">Run adbd daemon with Root privileges</string>
     <string name="settings_shell_su_adb_only">Restrict shell root to ADB</string>
     <string name="settings_shell_su_adb_only_summary">Extra check when Shell is granted root: only processes spawned by adbd or a KernelSU root process (e.g. an ADB module) can use it, preventing apps that obtain shell privileges from escalating to root</string>
@@ -347,5 +347,6 @@
     <string name="settings_navigation_badge_summary">Show granted app and enabled module counts on the navigation bar</string>
     <string name="settings_manager_disguise">Disguise as not installed</string>
     <string name="settings_manager_disguise_taps">Restore tap count</string>
-    <string name="settings_manager_disguise_summary">Hide root controls without disabling root. Tap the kernel version %1$d times to restore the manager, with no more than 2 seconds between taps. Restoring turns this mode off.</string>
+    <string name="settings_manager_disguise_summary">Hide root controls without disabling root. The mode and tap count survive reinstalling the manager. Tap the kernel version %1$d times to restore, with no more than 2 seconds between taps. Restoring turns this mode off.</string>
+    <string name="settings_manager_disguise_save_failed">Could not save the configuration in the root working directory. No change was applied.</string>
 </resources>
