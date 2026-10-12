@@ -668,13 +668,15 @@ mod tests {
     }
 
     #[test]
-    fn rejects_conflicting_loading_module_values() {
+    fn ignores_unused_loading_module_values() {
         let blob = build_btf(&[(136, 16, 24)], &[2, 3], 3);
-        assert!(
-            recover_single_btf(&blob)
-                .unwrap_err()
-                .to_string()
-                .contains("conflicting LOADING_MODULE values")
+        assert_eq!(
+            recover_single_btf(&blob).unwrap().load_info,
+            Some(LoadInfoLayout {
+                structure_size: 136,
+                hdr_offset: 16,
+                len_offset: 24,
+            })
         );
     }
 }
