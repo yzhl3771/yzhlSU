@@ -30,7 +30,6 @@ import me.weishu.kernelsu.ui.util.ManagerDisguise
 @Composable
 fun ManagerDisguiseSettings() {
     var editing by rememberSaveable { mutableStateOf(false) }
-    var enabling by rememberSaveable { mutableStateOf(false) }
     var input by rememberSaveable { mutableStateOf("") }
     val count = input.toIntOrNull()?.takeIf { it in 2..99 }
     val context = LocalContext.current
@@ -42,7 +41,11 @@ fun ManagerDisguiseSettings() {
                 title = stringResource(R.string.settings_manager_disguise),
                 summary = stringResource(R.string.settings_manager_disguise_summary, ManagerDisguise.tapCount),
                 checked = ManagerDisguise.enabled,
-                onCheckedChange = { if (it) enabling = true else ManagerDisguise.updateEnabled(false) },
+                onCheckedChange = {
+                    if (!ManagerDisguise.updateEnabled(it)) {
+                        Toast.makeText(context, R.string.settings_manager_disguise_save_failed, Toast.LENGTH_LONG).show()
+                    }
+                },
             )
         }
         item {
@@ -53,43 +56,39 @@ fun ManagerDisguiseSettings() {
             )
         }
     }
-    if (editing || enabling) {
+    if (editing) {
         AlertDialog(
-            onDismissRequest = { editing = false; enabling = false },
-            title = { Text(stringResource(if (editing) R.string.settings_manager_disguise_taps else R.string.settings_manager_disguise)) },
+            onDismissRequest = { editing = false },
+            title = { Text(stringResource(R.string.settings_manager_disguise_taps)) },
             text = {
                 Column {
                     Text(stringResource(R.string.settings_manager_disguise_summary, ManagerDisguise.tapCount))
-                    if (editing) {
-                        OutlinedTextField(
-                            value = input,
-                            onValueChange = { value -> if (value.length <= 2 && value.all { it in '0'..'9' }) input = value },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
-                            isError = count == null,
-                            label = { Text("2-99") },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        )
-                    }
+                    OutlinedTextField(
+                        value = input,
+                        onValueChange = { value -> if (value.length <= 2 && value.all { it in '0'..'9' }) input = value },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        isError = count == null,
+                        label = { Text("2-99") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    )
                 }
             },
             confirmButton = {
                 TextButton(
-                    enabled = !editing || count != null,
+                    enabled = count != null,
                     onClick = {
-                        val saved = if (editing) count?.let(ManagerDisguise::updateTapCount) == true
-                            else ManagerDisguise.updateEnabled(true)
+                        val saved = count?.let(ManagerDisguise::updateTapCount) == true
                         if (!saved) {
                             Toast.makeText(context, R.string.settings_manager_disguise_save_failed, Toast.LENGTH_LONG).show()
                             return@TextButton
                         }
                         editing = false
-                        enabling = false
                     },
                 ) { Text(stringResource(android.R.string.ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { editing = false; enabling = false }) { Text(stringResource(android.R.string.cancel)) }
+                TextButton(onClick = { editing = false }) { Text(stringResource(android.R.string.cancel)) }
             },
         )
     }
