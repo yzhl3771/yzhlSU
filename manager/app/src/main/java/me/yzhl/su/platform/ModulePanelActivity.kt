@@ -1,4 +1,9 @@
-package me.weishu.kernelsu.ui.webui
+package me.yzhl.su.platform
+
+import me.weishu.kernelsu.ui.webui.WebUIState
+import me.weishu.kernelsu.ui.webui.WebUIEvent
+import me.weishu.kernelsu.ui.webui.WebUIScreen
+import me.weishu.kernelsu.ui.webui.prepareWebView
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
@@ -34,12 +39,12 @@ import me.weishu.kernelsu.ui.util.ManagerDisguise
 import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
 
 @SuppressLint("SetJavaScriptEnabled")
-class WebUIActivity : ComponentActivity() {
+class ModulePanelActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         ManagerDisguise.reload()
         if (ManagerDisguise.enabled) {
-            startActivity(android.content.Intent(this, me.weishu.kernelsu.ui.MainActivity::class.java))
+            startActivity(android.content.Intent(this, me.yzhl.su.platform.DashboardActivity::class.java))
             finish()
         }
     }
@@ -54,7 +59,7 @@ class WebUIActivity : ComponentActivity() {
         ManagerDisguise.reload()
 
         if (ManagerDisguise.enabled) {
-            startActivity(android.content.Intent(this, me.weishu.kernelsu.ui.MainActivity::class.java))
+            startActivity(android.content.Intent(this, me.yzhl.su.platform.DashboardActivity::class.java))
             finish()
             return
         }

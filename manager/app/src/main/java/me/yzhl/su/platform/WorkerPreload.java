@@ -1,4 +1,4 @@
-package me.weishu.kernelsu.magica;
+package me.yzhl.su.platform;
 
 import android.app.ZygotePreload;
 import android.content.pm.ApplicationInfo;
@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 
-public class AppZygotePreload implements ZygotePreload {
+public class WorkerPreload implements ZygotePreload {
     public static final String TAG = "KernelSUMagica";
 
     private static native void forkDontCareAndExecKsud(String ksudPath, String packageName);

@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
-import me.weishu.kernelsu.ui.LocalMainPagerState
+import me.yzhl.su.platform.LocalMainPagerState
 
 @Composable
 fun NavigationRailMaterial(

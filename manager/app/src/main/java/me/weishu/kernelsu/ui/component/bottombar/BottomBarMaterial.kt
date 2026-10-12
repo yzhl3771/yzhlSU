@@ -28,7 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.LocalMainPagerState
+import me.yzhl.su.platform.LocalMainPagerState
 
 @Composable
 fun BottomBarMaterial(navigationBadge: NavigationBadgeState) {

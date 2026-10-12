@@ -27,6 +27,19 @@ EXPECTED = {
     ],
     "kernel/runtime/ksud.h": ['#define KSUD_PATH "/data/adb/ksud"'],
     "manager/app/src/main/cpp/ksu.cc": ["[yzhlsu_driver]"],
+    "manager/app/src/main/cpp/jni.cc": [
+        "Java_me_yzhl_su_platform_WorkerPreload_forkDontCareAndExecKsud",
+        "Java_me_weishu_kernelsu_Natives_getVersion",
+    ],
+    "manager/app/src/main/AndroidManifest.xml": [
+        "me.yzhl.su.platform.ManagerApplication",
+        "me.yzhl.su.platform.DashboardActivity",
+        "me.yzhl.su.platform.ModulePanelActivity",
+        "me.yzhl.su.platform.TransferService",
+        "me.yzhl.su.platform.StartupReceiver",
+        "me.yzhl.su.platform.WorkerService",
+        "me.yzhl.su.platform.WorkerPreload",
+    ],
     "userspace/ksud/src/ksucalls.rs": [
         "anon_inode:[yzhlsu_driver]",
         "anon_inode:[yzhlsu_driver_su]",
@@ -37,6 +50,9 @@ EXPECTED = {
         'concatcp!(BINARY_DIR, "ksud")',
         'concatcp!(ADB_DIR, "modules/")',
         'concatcp!(ADB_DIR, "modules_update/")',
+    ],
+    "userspace/ksud/src/late_load.rs": [
+        "{package_name}/me.yzhl.su.platform.DashboardActivity",
     ],
     "userspace/ksud/src/installer.sh": [
         '/data/adb/ksud sepolicy check "$1"',
@@ -82,7 +98,17 @@ FORBIDDEN = {
     ],
     "kernel/policy/allowlist.c": ['"/data/adb/ksu/.allowlist"'],
     "uapi/supercall.h": ["'K'"],
-    "manager/app/src/main/AndroidManifest.xml": ['android:scheme="ksu"'],
+    "manager/app/src/main/AndroidManifest.xml": [
+        'android:scheme="ksu"',
+        "me.weishu.kernelsu",
+        "MainActivity",
+        "WebUIActivity",
+        "BootCompletedReceiver",
+        "MagicaService",
+        "AppZygotePreload",
+        "DownloadService",
+        "KernelSUApplication",
+    ],
     ".github/workflows/build-lkm.yml": [
         "android12-5.10",
         "android13-5.10",

@@ -1,4 +1,7 @@
-package me.weishu.kernelsu.ui.util
+package me.yzhl.su.platform
+
+import me.weishu.kernelsu.ui.util.DownloadManager
+import me.weishu.kernelsu.ui.util.getFileName
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -30,7 +33,7 @@ import me.weishu.kernelsu.data.registry.RegistryDownloadStore
 import me.weishu.kernelsu.data.registry.RegistryUrls
 import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
 import me.weishu.kernelsu.ksuApp
-import me.weishu.kernelsu.ui.MainActivity
+import me.yzhl.su.platform.DashboardActivity
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -38,7 +41,7 @@ import java.io.File
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
-class DownloadService : Service() {
+class TransferService : Service() {
 
     companion object {
         const val CHANNEL_ID = "download_channel"
@@ -164,7 +167,7 @@ class DownloadService : Service() {
                             values
                         ) ?: throw IOException("Failed to create download")
                         pendingUri = downloadUri
-                        displayName = downloadUri.getFileName(this@DownloadService) ?: fileName
+                        displayName = downloadUri.getFileName(this@TransferService) ?: fileName
 
                         val output = contentResolver.openOutputStream(downloadUri)
                             ?: throw IOException("Failed to open download")
@@ -194,7 +197,7 @@ class DownloadService : Service() {
                     if (contentResolver.update(published, values, null, null) != 1) {
                         throw IOException("Failed to publish download")
                     }
-                    displayName = published.getFileName(this@DownloadService) ?: displayName
+                    displayName = published.getFileName(this@TransferService) ?: displayName
                     published
                 }
                 ensureActive()
@@ -212,7 +215,7 @@ class DownloadService : Service() {
                 ensureActive()
                 val verificationFailure = (e as? DownloadVerificationException)?.reason
                 if (verificationFailure != null) {
-                    Log.w("DownloadService", "Rejected download $url: ${e.message}")
+                    Log.w("TransferService", "Rejected download $url: ${e.message}")
                 }
                 DownloadManager.markFailed(id, e.message ?: "Unknown error", verificationFailure)
 
@@ -296,7 +299,7 @@ class DownloadService : Service() {
             }
             contentResolver.delete(uri, null, null)
         }.onFailure {
-            Log.w("DownloadService", "Failed to delete download: $uri", it)
+            Log.w("TransferService", "Failed to delete download: $uri", it)
         }
     }
 
@@ -330,7 +333,7 @@ class DownloadService : Service() {
             .setAutoCancel(true)
 
         // Add "Install" action button
-        val installIntent = Intent(this, MainActivity::class.java).apply {
+        val installIntent = Intent(this, DashboardActivity::class.java).apply {
             action = ACTION_INSTALL_MODULE
             putExtra(EXTRA_MODULE_URI, uri.toString())
             putExtra(EXTRA_DOWNLOAD_ID, id)
@@ -351,7 +354,7 @@ class DownloadService : Service() {
         builder.setContentIntent(installPendingIntent)
 
         // Add "Cancel" action button
-        val dismissIntent = Intent(this, DownloadService::class.java).apply {
+        val dismissIntent = Intent(this, TransferService::class.java).apply {
             action = ACTION_DISMISS_DOWNLOAD
             putExtra(EXTRA_DOWNLOAD_ID, id)
             putExtra(EXTRA_MODULE_URI, uri.toString())
@@ -390,7 +393,7 @@ class DownloadService : Service() {
         .build()
 
     private fun createCancelPendingIntent(downloadId: Int): PendingIntent {
-        val intent = Intent(this, DownloadService::class.java).apply {
+        val intent = Intent(this, TransferService::class.java).apply {
             action = ACTION_CANCEL
             putExtra(EXTRA_DOWNLOAD_ID, downloadId)
         }

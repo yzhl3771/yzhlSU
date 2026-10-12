@@ -34,7 +34,7 @@ import me.weishu.kernelsu.ui.screen.modulerepo.downloadFailureMessage
 import me.weishu.kernelsu.ui.util.download
 import me.weishu.kernelsu.ui.util.module.Shortcut
 import me.weishu.kernelsu.ui.viewmodel.ModuleViewModel
-import me.weishu.kernelsu.ui.webui.WebUIActivity
+import me.yzhl.su.platform.ModulePanelActivity
 
 @Composable
 fun ModulePager(
@@ -156,7 +156,7 @@ fun ModulePager(
         },
         onOpenWebUi = { module ->
             webUILauncher.launch(
-                Intent(context, WebUIActivity::class.java)
+                Intent(context, ModulePanelActivity::class.java)
                     .setData(
                         Shortcut.buildShortcutUri(module.id, ShortcutType.WebUI)
                     )

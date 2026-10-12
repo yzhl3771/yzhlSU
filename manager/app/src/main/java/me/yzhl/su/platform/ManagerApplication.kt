@@ -1,4 +1,7 @@
-package me.weishu.kernelsu
+package me.yzhl.su.platform
+
+import me.weishu.kernelsu.BuildConfig
+import me.weishu.kernelsu.ksuApp
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
@@ -16,9 +19,9 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
 import java.util.Locale
 
-lateinit var ksuApp: KernelSUApplication
 
-class KernelSUApplication : Application(), ViewModelStoreOwner {
+
+class ManagerApplication : Application(), ViewModelStoreOwner {
 
     companion object {
         fun setEnableOnBackInvokedCallback(appInfo: ApplicationInfo, enable: Boolean) {

@@ -21,9 +21,9 @@ import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
 import me.weishu.kernelsu.ksuApp
 import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
 import me.weishu.kernelsu.ui.screen.flash.FlashIt
-import me.weishu.kernelsu.ui.util.DownloadService
+import me.yzhl.su.platform.TransferService
 import me.weishu.kernelsu.ui.util.getFileName
-import me.weishu.kernelsu.ui.webui.WebUIActivity
+import me.yzhl.su.platform.ModulePanelActivity
 
 private const val SCHEME_KSU = "yzhlsu"
 private const val HOST_ACTION = "action"
@@ -35,7 +35,7 @@ private const val PARAM_TOKEN = "token"
  * Resolved intent action to execute after validation.
  */
 private sealed interface PendingAction {
-    /** Install module(s) from URI — triggered by DownloadService notification or ZIP file open. */
+    /** Install module(s) from URI — triggered by TransferService notification or ZIP file open. */
     data class InstallModule(
         val uri: Uri,
         val displayName: String,
@@ -98,11 +98,11 @@ fun getDisplayName(uri: Uri): String {
  * Returns null if the intent carries no recognized action.
  */
 private fun resolveIntent(intent: Intent): PendingAction? {
-    // DownloadService notification: install module
-    if (intent.action == DownloadService.ACTION_INSTALL_MODULE) {
-        val token = intent.getStringExtra(DownloadService.EXTRA_TOKEN)?.takeIf { it.isNotBlank() } ?: return null
+    // TransferService notification: install module
+    if (intent.action == TransferService.ACTION_INSTALL_MODULE) {
+        val token = intent.getStringExtra(TransferService.EXTRA_TOKEN)?.takeIf { it.isNotBlank() } ?: return null
         if (token != SettingsRepositoryImpl().intentToken) return null
-        val uriString = intent.getStringExtra(DownloadService.EXTRA_MODULE_URI)
+        val uriString = intent.getStringExtra(TransferService.EXTRA_MODULE_URI)
             ?: return null
         val uri = uriString.toUri()
         return PendingAction.InstallModule(
@@ -197,7 +197,7 @@ fun IntentDispatcher(intentChannel: ReceiveChannel<Intent>) {
             }
 
             is PendingAction.OpenWebUI -> {
-                val webIntent = Intent(context, WebUIActivity::class.java)
+                val webIntent = Intent(context, ModulePanelActivity::class.java)
                     .setData(buildInternalWebUiUri(action.moduleId))
                 context.startActivity(webIntent)
             }

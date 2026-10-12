@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.LocalMainPagerState
+import me.yzhl.su.platform.LocalMainPagerState
 import me.weishu.kernelsu.ui.component.FloatingBottomBar
 import me.weishu.kernelsu.ui.component.FloatingBottomBarItem
 import me.weishu.kernelsu.ui.theme.LocalEnableFloatingBottomBar

@@ -14,6 +14,7 @@ import me.weishu.kernelsu.data.registry.DownloadVerificationException
 import me.weishu.kernelsu.data.registry.ExpectedFile
 import me.weishu.kernelsu.data.registry.RegistryUrls
 import me.weishu.kernelsu.data.registry.canShareDownload
+import me.yzhl.su.platform.TransferService
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -82,14 +83,14 @@ object DownloadManager {
             completionCallbacks[id] = onCompleted
         }
 
-        val intent = Intent(context, DownloadService::class.java).apply {
-            action = DownloadService.ACTION_DOWNLOAD
-            putExtra(DownloadService.EXTRA_DOWNLOAD_ID, id)
-            putExtra(DownloadService.EXTRA_URL, url)
-            putExtra(DownloadService.EXTRA_FILE_NAME, fileName)
+        val intent = Intent(context, TransferService::class.java).apply {
+            action = TransferService.ACTION_DOWNLOAD
+            putExtra(TransferService.EXTRA_DOWNLOAD_ID, id)
+            putExtra(TransferService.EXTRA_URL, url)
+            putExtra(TransferService.EXTRA_FILE_NAME, fileName)
             if (expected != null) {
-                putExtra(DownloadService.EXTRA_EXPECTED_SIZE, expected.size)
-                putExtra(DownloadService.EXTRA_EXPECTED_SHA256, expected.sha256)
+                putExtra(TransferService.EXTRA_EXPECTED_SIZE, expected.size)
+                putExtra(TransferService.EXTRA_EXPECTED_SHA256, expected.sha256)
             }
         }
         ContextCompat.startForegroundService(context, intent)

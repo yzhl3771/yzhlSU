@@ -1,6 +1,6 @@
-package me.weishu.kernelsu.magica;
+package me.yzhl.su.platform;
 
-import static me.weishu.kernelsu.magica.AppZygotePreload.TAG;
+import static me.yzhl.su.platform.WorkerPreload.TAG;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,7 +9,7 @@ import android.util.Log;
 
 import me.weishu.kernelsu.ui.util.KsuCliKt;
 
-public class BootCompletedReceiver extends BroadcastReceiver {
+public class StartupReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -24,11 +24,11 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         }
         if (KsuCliKt.rootAvailable()) return;
         try {
-            context.startService(new Intent(context, MagicaService.class));
-            Log.i(TAG, "MagicaService started from boot action: " + action);
+            context.startService(new Intent(context, WorkerService.class));
+            Log.i(TAG, "WorkerService started from boot action: " + action);
         } catch (Throwable e) {
 
-            Log.e(TAG, "Failed to start MagicaService from boot action: " + action, e);
+            Log.e(TAG, "Failed to start WorkerService from boot action: " + action, e);
         }
     }
 }

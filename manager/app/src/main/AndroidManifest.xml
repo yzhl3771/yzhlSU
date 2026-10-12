@@ -12,7 +12,7 @@
     <uses-sdk tools:overrideLibrary="top.yukonga.miuix.kmp.blur" />
 
     <application
-        android:name=".KernelSUApplication"
+        android:name="me.yzhl.su.platform.ManagerApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:directBootAware="true"
@@ -23,9 +23,9 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/Theme.KernelSU"
-        android:zygotePreloadName="me.weishu.kernelsu.magica.AppZygotePreload">
+        android:zygotePreloadName="me.yzhl.su.platform.WorkerPreload">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="me.yzhl.su.platform.DashboardActivity"
             android:exported="true"
             android:theme="@style/Theme.KernelSU.Starting"
             android:windowSoftInputMode="adjustResize">
@@ -64,7 +64,7 @@
         </activity>
 
         <activity
-            android:name=".ui.webui.WebUIActivity"
+            android:name="me.yzhl.su.platform.ModulePanelActivity"
             android:autoRemoveFromRecents="true"
             android:configChanges="density|orientation|screenSize|screenLayout|smallestScreenSize|uiMode|locale|layoutDirection|fontScale|keyboard|keyboardHidden"
             android:documentLaunchMode="intoExisting"
@@ -83,19 +83,19 @@
         </provider>
 
         <service
-            android:name=".magica.MagicaService"
+            android:name="me.yzhl.su.platform.WorkerService"
             android:directBootAware="true"
             android:exported="false"
             android:isolatedProcess="true"
             android:useAppZygote="true" />
 
         <service
-            android:name=".ui.util.DownloadService"
+            android:name="me.yzhl.su.platform.TransferService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
         <receiver
-            android:name=".magica.BootCompletedReceiver"
+            android:name="me.yzhl.su.platform.StartupReceiver"
             android:directBootAware="true"
             android:enabled="false"
             android:exported="false"

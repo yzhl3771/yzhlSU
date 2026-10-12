@@ -1,4 +1,7 @@
-package me.weishu.kernelsu.ui
+package me.yzhl.su.platform
+
+import me.weishu.kernelsu.ui.LocalUiMode
+import me.weishu.kernelsu.ui.UiMode
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -113,7 +116,7 @@ import top.yukonga.miuix.kmp.utils.PagerInterceptionMode
 import top.yukonga.miuix.kmp.utils.PagerNavigationSpringSpec
 import top.yukonga.miuix.kmp.utils.pagerGestureOverride
 
-class MainActivity : ComponentActivity() {
+class DashboardActivity : ComponentActivity() {
 
     private val intentChannel = Channel<Intent>(capacity = Channel.BUFFERED)
     private var contentReady = false
