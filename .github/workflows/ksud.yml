@@ -66,6 +66,18 @@ jobs:
       with:
         ndk-version: r29
 
+    - name: Check Android Rust sources
+      if: inputs.target == 'aarch64-linux-android'
+      working-directory: userspace/ksud
+      env:
+        ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+      run: |
+        rustup component add clippy rustfmt
+        cargo install cargo-ndk --locked
+        cargo ndk -t arm64-v8a check
+        cargo ndk -t arm64-v8a clippy
+        cargo fmt
+
     - name: Build ksud
       env:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LayersClear
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.Text
@@ -76,6 +77,7 @@ fun SettingPagerMaterial(
                             val umountSummary = when (uiState.kernelUmountStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                 "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                "forced" -> stringResource(id = R.string.feature_status_forced_summary)
                                 else -> stringResource(id = R.string.settings_kernel_umount_summary)
                             }
                             SegmentedSwitchItem(
@@ -91,6 +93,7 @@ fun SettingPagerMaterial(
                             val selinuxHideSummary = when (uiState.selinuxHideStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                 "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                "forced" -> stringResource(id = R.string.feature_status_forced_summary)
                                 else -> stringResource(id = R.string.settings_selinux_hide_summary)
                             }
                             SegmentedSwitchItem(
@@ -100,6 +103,22 @@ fun SettingPagerMaterial(
                                 enabled = uiState.selinuxHideStatus == "supported",
                                 checked = uiState.isSelinuxHideEnabled,
                                 onCheckedChange = actions.onSetSelinuxHideEnabled
+                            )
+                        },
+                        {
+                            val shellSuAdbOnlySummary = when (uiState.shellSuAdbOnlyStatus) {
+                                "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
+                                "managed" -> stringResource(id = R.string.feature_status_managed_summary)
+                                "forced" -> stringResource(id = R.string.feature_status_forced_summary)
+                                else -> stringResource(id = R.string.settings_shell_su_adb_only_summary)
+                            }
+                            SegmentedSwitchItem(
+                                icon = Icons.Filled.VerifiedUser,
+                                title = stringResource(id = R.string.settings_shell_su_adb_only),
+                                summary = shellSuAdbOnlySummary,
+                                enabled = uiState.shellSuAdbOnlyStatus == "supported",
+                                checked = uiState.isShellSuAdbOnlyEnabled,
+                                onCheckedChange = actions.onSetShellSuAdbOnlyEnabled
                             )
                         },
                     )
