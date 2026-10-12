@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -92,6 +93,7 @@ import me.weishu.kernelsu.ui.theme.LocalEnableNavigationBadge
 import me.weishu.kernelsu.ui.theme.LocalModuleDescriptionMaxLines
 import me.weishu.kernelsu.ui.util.getSuperuserCount
 import me.weishu.kernelsu.ui.util.install
+import me.weishu.kernelsu.ui.util.ManagerDisguise
 import me.weishu.kernelsu.ui.util.rememberBlurBackdrop
 import me.weishu.kernelsu.ui.util.rememberContentReady
 import me.weishu.kernelsu.ui.viewmodel.MainActivityViewModel
@@ -131,7 +133,7 @@ class MainActivity : ComponentActivity() {
         val isManager = Natives.isManager
         if (isManager && Natives.kernelUAPIVersion == Natives.managerUAPIVersion) install()
 
-        if (savedInstanceState == null) intent?.let { intentChannel.trySend(it) }
+        if (savedInstanceState == null && !ManagerDisguise.enabled) intent?.let { intentChannel.trySend(it) }
 
         setContent {
             val viewModel = viewModel<MainActivityViewModel>()
@@ -157,6 +159,13 @@ class MainActivity : ComponentActivity() {
             }
 
             val navigator = rememberNavigator(Route.Main)
+            val disguised = ManagerDisguise.enabled
+            LaunchedEffect(disguised) {
+                if (disguised) {
+                    navigator.replaceAll(listOf(Route.Main))
+                    viewModel.setSelectedMainPage(0)
+                }
+            }
             val systemDensity = LocalDensity.current
             val density = remember(systemDensity, uiState.pageScale) {
                 Density(systemDensity.density * uiState.pageScale, systemDensity.fontScale)
@@ -174,6 +183,13 @@ class MainActivity : ComponentActivity() {
                 LocalUiMode provides uiMode,
             ) {
                 KernelSUTheme(appSettings = appSettings, uiMode = uiMode) {
+                    if (disguised) {
+                        // Discard hidden-mode shortcuts instead of replaying them on unlock.
+                        LaunchedEffect(Unit) { for (ignored in intentChannel) { } }
+                        HomePager(navigator, 0.dp, disguised = true)
+                        SideEffect { contentReady = true }
+                        return@KernelSUTheme
+                    }
                     IntentDispatcher(intentChannel = intentChannel)
                     val swipeDismiss = if (uiState.enableSwipeDismiss) {
                         if (LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl) {
@@ -258,7 +274,7 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        intentChannel.trySend(intent)
+        if (!ManagerDisguise.enabled) intentChannel.trySend(intent)
     }
 }
 

@@ -339,4 +339,7 @@
     <string name="nav_rail_collapse">收起导航栏</string>
     <string name="settings_navigation_badge">导航栏角标</string>
     <string name="settings_navigation_badge_summary">在导航栏显示已授权应用和已启用模块数量</string>
+    <string name="settings_manager_disguise">伪装未安装模式</string>
+    <string name="settings_manager_disguise_taps">恢复管理器的连点次数</string>
+    <string name="settings_manager_disguise_summary">隐藏 Root 管理界面，不会关闭 Root。连点首页内核版本号 %1$d 次恢复管理器，相邻点击间隔不能超过 2 秒。恢复后此模式自动关闭。</string>
 </resources>

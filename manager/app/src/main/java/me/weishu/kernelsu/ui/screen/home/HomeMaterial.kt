@@ -1,5 +1,8 @@
 package me.weishu.kernelsu.ui.screen.home
 
+import android.os.SystemClock
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +43,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,7 +59,9 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.component.WarningLevel
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.SegmentedColumn
-import me.weishu.kernelsu.ui.component.material.SegmentedListItem
+import me.weishu.kernelsu.ui.component.material.SegmentedItemContainer
+import me.weishu.kernelsu.ui.util.KernelTapCounter
+import me.weishu.kernelsu.ui.util.ManagerDisguise
 import me.weishu.kernelsu.ui.component.material.TonalCard
 import me.weishu.kernelsu.ui.component.material.expressiveTopAppBarColors
 import me.weishu.kernelsu.ui.component.rebootlistpopup.RebootListPopup
@@ -66,11 +72,19 @@ fun HomePagerMaterial(
     state: HomeUiState,
     actions: HomeActions,
     bottomInnerPadding: Dp,
+    disguised: Boolean = false,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val taps = remember(disguised, ManagerDisguise.tapCount) { KernelTapCounter(ManagerDisguise.tapCount) }
+    val kernelModifier = if (disguised) Modifier.clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+    ) {
+        if (taps.tap(SystemClock.elapsedRealtime())) ManagerDisguise.updateEnabled(false)
+    } else Modifier
 
     ExpressiveScaffold(
-        topBar = { TopBar(scrollBehavior = scrollBehavior) },
+        topBar = { TopBar(scrollBehavior = scrollBehavior, disguised = disguised) },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         Column(
@@ -81,44 +95,50 @@ fun HomePagerMaterial(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
-            if (state.showManagerPrBuildWarning) {
-                WarningCard(stringResource(id = R.string.home_pr_build_warning), level = WarningLevel.Notice)
-            } else if (state.showKernelPrBuildWarning) {
-                WarningCard(stringResource(id = R.string.home_pr_kernel_warning), level = WarningLevel.Notice)
-            }
-            if (state.showGkiWarning) {
-                WarningCard(stringResource(id = R.string.home_gki_warning), level = WarningLevel.Notice)
-            }
-            if (state.requiresNewKernel) {
-                WarningCard(
-                    stringResource(
-                        id = if (state.canInstallKernelUpdate) R.string.require_kernel_version else R.string.require_kernel_version_gki
-                    ),
-                    onClick = if (state.canInstallKernelUpdate) actions.onInstallClick else null
-                )
-            }
-            if (state.requiresNewManager) {
-                WarningCard(
-                    stringResource(
-                        id = R.string.require_manager_version
+            if (!disguised) {
+                if (state.showManagerPrBuildWarning) {
+                    WarningCard(stringResource(id = R.string.home_pr_build_warning), level = WarningLevel.Notice)
+                } else if (state.showKernelPrBuildWarning) {
+                    WarningCard(stringResource(id = R.string.home_pr_kernel_warning), level = WarningLevel.Notice)
+                }
+                if (state.showGkiWarning) {
+                    WarningCard(stringResource(id = R.string.home_gki_warning), level = WarningLevel.Notice)
+                }
+                if (state.requiresNewKernel) {
+                    WarningCard(
+                        stringResource(
+                            id = if (state.canInstallKernelUpdate) R.string.require_kernel_version else R.string.require_kernel_version_gki
+                        ),
+                        onClick = if (state.canInstallKernelUpdate) actions.onInstallClick else null
                     )
+                }
+                if (state.requiresNewManager) {
+                    WarningCard(
+                        stringResource(
+                            id = R.string.require_manager_version
+                        )
+                    )
+                }
+                if (state.showLkmUpdate) {
+                    WarningCard(
+                        message = stringResource(R.string.home_lkm_update_available),
+                        level = WarningLevel.Notice,
+                        onClick = actions.onInstallClick,
+                    )
+                }
+                if (state.showRootWarning) {
+                    WarningCard(stringResource(id = R.string.grant_root_failed))
+                }
+                StatusCard(
+                    state = state,
+                    actions = actions,
                 )
+            } else {
+                TonalCard {
+                    Text(stringResource(R.string.home_not_installed), modifier = Modifier.fillMaxWidth().padding(20.dp))
+                }
             }
-            if (state.showLkmUpdate) {
-                WarningCard(
-                    message = stringResource(R.string.home_lkm_update_available),
-                    level = WarningLevel.Notice,
-                    onClick = actions.onInstallClick,
-                )
-            }
-            if (state.showRootWarning) {
-                WarningCard(stringResource(id = R.string.grant_root_failed))
-            }
-            StatusCard(
-                state = state,
-                actions = actions,
-            )
-            InfoCard(systemInfo = state.systemInfo)
+            InfoCard(systemInfo = state.systemInfo, kernelModifier = kernelModifier)
             Spacer(
                 Modifier.height(
                     bottomInnerPadding + if (!Natives.isFullFeatured())
@@ -131,11 +151,12 @@ fun HomePagerMaterial(
 
 @Composable
 private fun TopBar(
-    scrollBehavior: TopAppBarScrollBehavior? = null
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    disguised: Boolean = false,
 ) {
     LargeFlexibleTopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
-        actions = { RebootListPopup() },
+        actions = { if (!disguised) RebootListPopup() },
         colors = expressiveTopAppBarColors(),
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
         scrollBehavior = scrollBehavior
@@ -310,6 +331,7 @@ private fun WarningCard(
 private fun InfoCard(
     systemInfo: SystemInfo,
     modifier: Modifier = Modifier,
+    kernelModifier: Modifier = Modifier,
 ) {
     @Composable
     fun InfoCardItem(
@@ -318,18 +340,19 @@ private fun InfoCard(
         content: String,
         modifier: Modifier = Modifier,
     ) {
-        SegmentedListItem(
-            modifier = modifier,
-            headlineContent = { Text(text = label, style = MaterialTheme.typography.bodyLarge) },
-            leadingContent = { Icon(imageVector = icon, contentDescription = label) },
-            supportingContent = {
-                Text(
-                    text = content,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            },
-        )
+        SegmentedItemContainer(modifier = modifier) {
+            ListItem(
+                content = { Text(text = label, style = MaterialTheme.typography.bodyLarge) },
+                leadingContent = { Icon(imageVector = icon, contentDescription = label) },
+                supportingContent = {
+                    Text(
+                        text = content,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+            )
+        }
     }
 
     val selinuxDisplay = when (systemInfo.selinuxStatus) {
@@ -363,6 +386,7 @@ private fun InfoCard(
                     icon = Icons.Filled.DeveloperBoard,
                     label = stringResource(R.string.home_kernel),
                     content = systemInfo.kernelVersion,
+                    modifier = kernelModifier,
                 )
             }
             item {

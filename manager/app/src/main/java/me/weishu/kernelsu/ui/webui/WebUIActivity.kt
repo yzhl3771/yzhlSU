@@ -30,10 +30,19 @@ import me.weishu.kernelsu.ui.LocalUiMode
 import me.weishu.kernelsu.ui.UiMode
 import me.weishu.kernelsu.ui.theme.KernelSUTheme
 import me.weishu.kernelsu.ui.theme.ThemeController
+import me.weishu.kernelsu.ui.util.ManagerDisguise
 import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
 
 @SuppressLint("SetJavaScriptEnabled")
 class WebUIActivity : ComponentActivity() {
+    override fun onResume() {
+        super.onResume()
+        if (ManagerDisguise.enabled) {
+            startActivity(android.content.Intent(this, me.weishu.kernelsu.ui.MainActivity::class.java))
+            finish()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         enableEdgeToEdge()
@@ -41,6 +50,12 @@ class WebUIActivity : ComponentActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
         super.onCreate(savedInstanceState)
+
+        if (ManagerDisguise.enabled) {
+            startActivity(android.content.Intent(this, me.weishu.kernelsu.ui.MainActivity::class.java))
+            finish()
+            return
+        }
 
         setContent {
             val context = LocalContext.current

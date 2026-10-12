@@ -35,6 +35,7 @@ fun HomePager(
     navigator: Navigator,
     bottomInnerPadding: Dp,
     isCurrentPage: Boolean = true,
+    disguised: Boolean = false,
 ) {
     val viewModel = viewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -90,6 +91,7 @@ fun HomePager(
             state = uiState,
             actions = actions,
             bottomInnerPadding = bottomInnerPadding,
+            disguised = disguised,
         )
     }
 }
