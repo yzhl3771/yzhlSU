@@ -9,6 +9,16 @@ ROOT = Path(__file__).resolve().parents[1]
 
 EXPECTED = {
     "uapi/supercall.h": ["0x595A484C", "0x53553031", "_IOR('Y'"],
+    "kernel/preinit/runner/runner.c": [
+        '"/metadata/vold/yzhlsu"',
+        '"/metadata/watchdog/yzhlsu"',
+        '"/metadata/yzhlsu"',
+    ],
+    "kernel/runtime/ksud_integration.c": [
+        '"/metadata/vold/yzhlsu/modules.rc"',
+        '"/metadata/watchdog/yzhlsu/modules.rc"',
+        '"/metadata/yzhlsu/modules.rc"',
+    ],
     "kernel/Kbuild": [
         "KSU_PACKAGE_NAME ?= me.yzhl.su",
         "yzhlSU requires KSU_EXPECTED_SIZE",
@@ -46,6 +56,9 @@ EXPECTED = {
     ],
     "userspace/ksud/src/defs.rs": [
         '"yzhlsu/"',
+        '"/metadata/vold/yzhlsu/"',
+        '"/metadata/watchdog/yzhlsu/"',
+        '"/metadata/yzhlsu/"',
         'concatcp!(ADB_DIR, "ksud")',
         'concatcp!(BINARY_DIR, "ksud")',
         'concatcp!(ADB_DIR, "modules/")',
